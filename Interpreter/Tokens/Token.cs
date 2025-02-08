@@ -6,7 +6,7 @@ public class Token(TokenType? tokenType, string lexeme, object? literal, int lin
 {
     public TokenType? Type { get; set; } = tokenType;
     public string Lexeme { get; set; } = lexeme;
-    public object? Literal { get; set; } = literal ?? "null";
+    public object? Literal { get; set; } = literal;
     public int Line { get; set; } = line;
 
     public Token(TokenType? tokenType, string lexeme) : this(tokenType, lexeme, null, 0)
