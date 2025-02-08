@@ -1,5 +1,7 @@
 ﻿using CodeCrafters.Interpreter.Attributes;
 
+// ReSharper disable IdentifierTypo
+
 namespace CodeCrafters.Interpreter.Commands;
 
 [Command("tokenize")]
@@ -10,20 +12,12 @@ public class Tokenize : ICommand
     public void Execute(params string[] args)
     {
         var filename = args[1];
-        //var fileContents = File.ReadAllText(Path.Combine("Data", filename));
-        var fileContents = "";
+        var scanner = new Scanner(Path.Combine("Data", filename));
+        var tokens = scanner.ScanTokens();
 
-        //// You can use print statements as follows for debugging, they'll be visible when running tests.
-        //Console.Error.WriteLine("Logs from your program will appear here!");
-
-        //Uncomment this block to pass the first stage
-        if (!string.IsNullOrEmpty(fileContents))
+        foreach (var token in tokens)
         {
-            throw new NotImplementedException("Scanner not implemented");
-        }
-        else
-        {
-            Console.WriteLine("EOF  null"); // Placeholder, remove this line when implementing the scanner
+            Console.WriteLine(token);
         }
     }
 }
