@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".codecrafters", ".codecraft
 		.codecrafters\run.sh = .codecrafters\run.sh
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interpreter.Tests", "Interpreter.Tests\Interpreter.Tests.csproj", "{900993C1-5A11-41D3-BB36-9107EC7D7AE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{08AEDCCA-10D2-4981-A45C-00034A41A88A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08AEDCCA-10D2-4981-A45C-00034A41A88A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08AEDCCA-10D2-4981-A45C-00034A41A88A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{900993C1-5A11-41D3-BB36-9107EC7D7AE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{900993C1-5A11-41D3-BB36-9107EC7D7AE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{900993C1-5A11-41D3-BB36-9107EC7D7AE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{900993C1-5A11-41D3-BB36-9107EC7D7AE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

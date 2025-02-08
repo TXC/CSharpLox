@@ -11,12 +11,26 @@ public class Tokenize : ICommand
 
     public int Execute(params string[] args)
     {
-        var scanner = new Scanner(args[1]);
+        var source = args[1];
+        if (!File.Exists(source))
+        {
+            throw new FileNotFoundException("File not found", source);
+        }
+        var content = File.ReadAllText(source).Trim();
+
+        var scanner = new Scanner(content);
         var tokens = scanner.ScanTokens();
 
         foreach (var token in tokens)
         {
-            Console.WriteLine(token);
+            if (token.Type is null)
+            {
+                Console.Error.WriteLine(token);
+            }
+            else
+            {
+                Console.WriteLine(token);
+            }
         }
 
         return scanner.IsValid ? 0 : 65;

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 // ReSharper disable IdentifierTypo
 
 namespace CodeCrafters.Interpreter;
-internal class Scanner
+public class Scanner
 {
     //private readonly string _source = source;
     private readonly string _source;
@@ -39,13 +39,7 @@ internal class Scanner
     {
         using var factory = LoggerFactory.Create(builder => builder.AddConsole());
         _logger = factory.CreateLogger("Scanner");
-
-        if (!File.Exists(source))
-        {
-            throw new FileNotFoundException("File not found", source);
-        }
-        _source = File.ReadAllText(source).Trim();
-
+        _source = source;
     }
 
     public List<Token> ScanTokens()
@@ -88,7 +82,7 @@ internal class Scanner
                 '/' => Match('/') ? ReadUntilEol() : TokenType.SLASH,
                 ' ' or '\n' or '\r' or '\t' => TokenType.None,
                 '"' => AddString(),
-                _ => IsDigit(c) ? AddNumber() : IsAlpha(c) ? AddIdentifier() : throw new TokenException($"Unexpected character", c, _line)
+                _ => IsDigit(c) ? AddNumber() : IsAlpha(c) ? AddIdentifier() : AddInvalidToken(c)
             };
 
             if (tokentype != TokenType.None)
@@ -98,7 +92,6 @@ internal class Scanner
         }
         catch (TokenException ex)
         {
-            //_logger.LogError("[line {line}] Error: {error}: {character} ", ex.Line, ex.Message, ex.Character);
             Console.Error.WriteLine($"[line {ex.Line}] Error: {ex.Message}: {ex.Character}");
             IsValid = false;
         }
@@ -135,7 +128,9 @@ internal class Scanner
 
         if (IsAtEnd())
         {
-            throw new TokenException("Unterminated string", _line);
+            IsValid = false;
+            _tokens.Add(new Token(null, "Unterminated string", _source[_start.._current], _line));
+            return TokenType.None;
         }
 
         // The closing ".
@@ -197,6 +192,13 @@ internal class Scanner
 
     private void AddToken(TokenType type, object? literal)
         => _tokens.Add(new Token(type, _source[_start.._current], literal, _line));
+
+    private TokenType AddInvalidToken(object? literal)
+    {
+        IsValid = false;
+        _tokens.Add(new Token(null, _source[_start.._current], literal, _line));
+        return TokenType.None;
+    }
 
     private bool Match(char expected)
     {
