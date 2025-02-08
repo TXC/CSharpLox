@@ -8,4 +8,8 @@
 
 set -e # Exit on failure
 
-exec /tmp/codecrafters-build-csharp/codecrafters-interpreter "$@"
+ls -l /tmp/
+
+ls -l /tmp/codecrafters-build-csharp/ 
+
+exec /tmp/codecrafters-build-csharp/Interpreter "$@"
