@@ -13,12 +13,17 @@ namespace Interpreter.Tests
         }
 
         [TestMethod]
-        public void TestInvalidString()
+        [DataRow("\"bar")]
+        [DataRow("\"bar\" \"unterminated")]
+        public void TestInvalidString(string input)
         {
-            var scanner = new Scanner("\"bar");
+            var scanner = new Scanner(input);
             var tokens = scanner.ScanTokens();
 
-            var xx = tokens.Count();
+            //var strings = tokens.Select(t => t.ToString()).ToArray();
+
+            Assert.IsTrue(tokens.Any(x => x.Type is null));
+            Assert.IsTrue(tokens.Any());
         }
     }
 }
