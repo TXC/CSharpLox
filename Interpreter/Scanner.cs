@@ -196,7 +196,7 @@ public class Scanner
     private TokenType AddInvalidToken(object? literal)
     {
         IsValid = false;
-        _tokens.Add(new Token(null, _source[_start.._current], literal, _line));
+        _tokens.Add(new Token(null, "Unexpected character", literal, _line));
         return TokenType.None;
     }
 
