@@ -90,7 +90,7 @@ internal class Scanner
                 '/' => Match('/') ? ReadUntilEol() : TokenType.SLASH,
                 ' ' or '\n' or '\r' or '\t' => TokenType.None,
                 '"' => AddString(),
-                _ => IsDigit(c) ? AddNumber() : IsAlpha(c) ? AddIdentifier() : throw new TokenException("Unexpected character", _line)
+                _ => IsDigit(c) ? AddNumber() : IsAlpha(c) ? AddIdentifier() : throw new TokenException($"Unexpected character", c, _line)
             };
 
             if (tokentype != TokenType.None)
@@ -100,7 +100,8 @@ internal class Scanner
         }
         catch (TokenException ex)
         {
-            _logger.LogError("Caught error on line {line}: {error} ", ex.Line, ex.Message);
+            //_logger.LogError("[line {line}] Error: {error}: {character} ", ex.Line, ex.Message, ex.Character);
+            Console.Error.WriteLine($"[line {ex.Line}] Error: {ex.Message}: {ex.Character}");
         }
         catch (LoxException ex)
         {
