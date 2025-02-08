@@ -129,7 +129,7 @@ public class Scanner
         if (IsAtEnd())
         {
             IsValid = false;
-            _tokens.Add(new Token(null, "Unterminated string", _source[(_start + 1).._current], _line));
+            _tokens.Add(new Token(null, "Unterminated string.", null, _line));
             return TokenType.None;
         }
 
