@@ -11,8 +11,7 @@ public class Tokenize : ICommand
 
     public void Execute(params string[] args)
     {
-        var filename = args[1];
-        var scanner = new Scanner(Path.Combine("Data", filename));
+        var scanner = new Scanner(args[1]);
         var tokens = scanner.ScanTokens();
 
         foreach (var token in tokens)

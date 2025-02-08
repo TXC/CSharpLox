@@ -9,11 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Data\test.lox" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Data\test.lox">
+    <Content Include="test.lox">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
