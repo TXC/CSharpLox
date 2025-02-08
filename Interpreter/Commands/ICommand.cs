@@ -2,6 +2,11 @@
 {
     public interface ICommand
     {
-        void Execute(params string[] args);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns>Exit code</returns>
+        int Execute(params string[] args);
     }
 }

@@ -9,7 +9,7 @@ public class Tokenize : ICommand
 {
     public Tokenize() { }
 
-    public void Execute(params string[] args)
+    public int Execute(params string[] args)
     {
         var scanner = new Scanner(args[1]);
         var tokens = scanner.ScanTokens();
@@ -18,5 +18,7 @@ public class Tokenize : ICommand
         {
             Console.WriteLine(token);
         }
+
+        return scanner.IsValid ? 0 : 65;
     }
 }

@@ -22,23 +22,25 @@ public class Program
                 Environment.Exit(1);
             }
 
-            var result = AttributeHelper.GetAttributeTypes<ICommand, CommandAttribute>(x => x.Command == args[0]);
+            var types = AttributeHelper.GetAttributeTypes<ICommand, CommandAttribute>(x => x.Command == args[0]);
 
-            if (result.Count > 1)
+            if (types.Count > 1)
             {
                 log.LogError("Ambiguous command: {argument}", args[0]);
                 Environment.Exit(1);
             }
-            else if (result.Count == 0)
+            else if (types.Count == 0)
             {
                 log.LogError("Unknown command: {argument}", args[0]);
                 Environment.Exit(1);
             }
 
-            var type = result.Single();
+            var type = types.Single();
             var classInstance = (ICommand?)Activator.CreateInstance(type, null) ?? throw new NullReferenceException($"Unknown instance {type.Name}");
             var methodInfo = type.GetMethod("Execute");
-            methodInfo?.Invoke(classInstance, [args]);
+            var result = (int?)methodInfo?.Invoke(classInstance, [args]) ?? 1;
+
+            Environment.Exit(result);
         }
         catch (Exception ex)
         {

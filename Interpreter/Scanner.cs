@@ -1,11 +1,6 @@
-﻿using System.IO;
-using System.Runtime.InteropServices.JavaScript;
-using System.Text;
-using CodeCrafters.Interpreter.Exceptions;
+﻿using CodeCrafters.Interpreter.Exceptions;
 using CodeCrafters.Interpreter.Tokens;
 using Microsoft.Extensions.Logging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 // ReSharper disable IdentifierTypo
 
@@ -38,6 +33,8 @@ internal class Scanner
         {"while",  TokenType.WHILE},
     };
 
+    public bool IsValid { get; private set; }
+
     public Scanner(string source)
     {
         using var factory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -53,6 +50,7 @@ internal class Scanner
 
     public List<Token> ScanTokens()
     {
+        IsValid = true;
         while (!IsAtEnd())
         {
             _start = _current;
@@ -102,6 +100,7 @@ internal class Scanner
         {
             //_logger.LogError("[line {line}] Error: {error}: {character} ", ex.Line, ex.Message, ex.Character);
             Console.Error.WriteLine($"[line {ex.Line}] Error: {ex.Message}: {ex.Character}");
+            IsValid = false;
         }
         catch (LoxException ex)
         {
