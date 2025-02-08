@@ -22,6 +22,11 @@ public class Token(TokenType? tokenType, string lexeme, object? literal, int lin
 
     public override string ToString()
     {
+        if (Type is null && Literal is null)
+        {
+            return $"[line {Line}] Error: {Lexeme}";
+        }
+
         if (Type is null)
         {
             return $"[line {Line}] Error: {Lexeme}: {Literal}";
