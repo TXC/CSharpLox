@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Tokenize.Development": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "commandLineArgs": "tokenize test.lox",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Tokenize.Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "commandLineArgs": "tokenize test.lox",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}
