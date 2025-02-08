@@ -1,0 +1,30 @@
+﻿// ReSharper disable IdentifierTypo
+
+namespace CodeCrafters.Interpreter.Tokens;
+
+public class Token(TokenType tokenType, string lexeme, object? literal, int line)
+{
+    public TokenType Type { get; set; } = tokenType;
+    public string Lexeme { get; set; } = lexeme;
+    public object? Literal { get; set; } = literal ?? "null";
+    public int Line { get; set; } = line;
+
+    //final TokenType type;
+    //final String lexeme;
+    //final Object literal;
+    //final int line;
+
+    public Token(TokenType tokenType, string lexeme) : this(tokenType, lexeme, null, 0)
+    {
+    }
+
+    public Token(TokenType tokenType) : this(tokenType, string.Empty, null, 0)
+    {
+    }
+
+    public Token Clone()
+        => new Token(Type, Lexeme, Literal, Line);
+
+    public override string ToString()
+        => $"{Type} {Lexeme} {Literal ?? "null"}";
+}
