@@ -19,6 +19,7 @@ internal class AstPrinter : Expr.IVisitor<string>
         return expr.Value switch
         {
             null => "nil",
+            bool => $"{expr.Value}".ToLower(),
             double d => string.Format(CultureInfo.InvariantCulture, "{0:0.0##}", d),
             _ => $"{expr.Value}"
         };

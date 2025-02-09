@@ -47,8 +47,9 @@ namespace Interpreter.Tests
         }
 
         [TestMethod]
-        [DataRow("true", "True")]
-        [DataRow("false", "False")]
+        //[DataRow(null, "nil")]
+        [DataRow("true", "true")]
+        [DataRow("false", "false")]
         public void TestBooleanExpression(string input, string expect)
         {
             var scanner = new Scanner(input);
