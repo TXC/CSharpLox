@@ -5,18 +5,13 @@
 namespace CodeCrafters.Interpreter.Commands;
 
 [Command("tokenize")]
-public class Tokenize : ICommand
+public class Tokenize : BaseCommand, ICommand
 {
     public Tokenize() { }
 
-    public int Execute(params string[] args)
+    public void Execute(params string[] args)
     {
-        var source = args[1];
-        if (!File.Exists(source))
-        {
-            throw new FileNotFoundException("File not found", source);
-        }
-        var content = File.ReadAllText(source).TrimEnd();
+        var content = ParseFile();
 
         var scanner = new Scanner(content);
         var tokens = scanner.ScanTokens();
@@ -33,6 +28,9 @@ public class Tokenize : ICommand
             }
         }
 
-        return scanner.IsValid ? 0 : 65;
+        if (Lox.HadError)
+        {
+            Environment.Exit(65);
+        }
     }
 }

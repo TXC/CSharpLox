@@ -2,7 +2,7 @@
 
 using System.Globalization;
 
-namespace CodeCrafters.Interpreter.Tokens;
+namespace CodeCrafters.Interpreter;
 
 public class Token(TokenType? tokenType, string lexeme, object? literal, int line = 0, int startIndex = 0, int endIndex = 0)
 {

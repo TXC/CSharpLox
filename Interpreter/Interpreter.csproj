@@ -19,4 +19,11 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+    <_Parameter1>Interpreter.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>      
+  
+  
 </Project>

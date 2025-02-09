@@ -1,7 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "Tokenize.Development": {
+    "Tokenize": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "commandLineArgs": "tokenize test.lox",
@@ -9,12 +9,28 @@
         "DOTNET_ENVIRONMENT": "Development"
       }
     },
-    "Tokenize.Production": {
+    "Parser": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "commandLineArgs": "tokenize test.lox",
+      "commandLineArgs": "parse test.lox",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Production"
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Evaluate": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "commandLineArgs": "evaluate test.lox",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Tooling.GenerateAST": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "commandLineArgs": "generate_ast data",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
       }
     }
   }

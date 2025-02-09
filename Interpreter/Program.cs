@@ -38,9 +38,17 @@ public class Program
             var type = types.Single();
             var classInstance = (ICommand?)Activator.CreateInstance(type, null) ?? throw new NullReferenceException($"Unknown instance {type.Name}");
             var methodInfo = type.GetMethod("Execute");
-            var result = (int?)methodInfo?.Invoke(classInstance, [args]) ?? 1;
+            var result = methodInfo?.Invoke(classInstance, [args]);
 
-            Environment.Exit(result);
+            if (Lox.HadError)
+            {
+                Environment.Exit(65);
+            }
+            if (Lox.HadRuntimeError)
+            {
+                Environment.Exit(70);
+            }
+            Environment.Exit(0);
         }
         catch (Exception ex)
         {

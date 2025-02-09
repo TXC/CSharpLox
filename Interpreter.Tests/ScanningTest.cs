@@ -1,12 +1,9 @@
-﻿using System.Text.RegularExpressions;
-using CodeCrafters.Interpreter;
-using CodeCrafters.Interpreter.Tokens;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
+﻿using CodeCrafters.Interpreter;
 
 namespace Interpreter.Tests
 {
     [TestClass]
-    public sealed partial class ScanningTest
+    public sealed class ScanningTest
     {
         [TestMethod]
         [DataRow("identifiers.lox")]
@@ -17,17 +14,15 @@ namespace Interpreter.Tests
         [DataRow("whitespace.lox")]
         public void TestLoxDataFiles(string filename)
         {
-            var r = LoxExpect();
-            var filePath = Path.Combine("Scanning", filename);
+            var filePath = Path.Combine("LoxFiles", "Scanning", filename);
             var content = File.ReadAllText(filePath).TrimEnd();
-            var matches = r.Matches(content);
+            var matches = new LoxFileParser(content).Parse();
             var ss = new Scanner(content);
 
             var tokens = ss.ScanTokens();
             for (var i = 0; i < tokens.Count; i++)
             {
-                Assert.AreEqual(matches[i].Groups[1].Value,
-                                tokens[i].ToString());
+                Assert.AreEqual(matches[i], tokens[i].ToString());
             }
         }
 
@@ -70,8 +65,5 @@ namespace Interpreter.Tests
                 Assert.AreEqual(expected[i].ToString(), tokens[i].ToString());
             }
         }
-
-        [GeneratedRegex(@"^// expect: (.+)$", RegexOptions.Multiline | RegexOptions.Compiled)]
-        private static partial Regex LoxExpect();
     }
 }

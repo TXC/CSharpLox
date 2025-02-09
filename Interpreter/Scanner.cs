@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using CodeCrafters.Interpreter.Exceptions;
-using CodeCrafters.Interpreter.Tokens;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable IdentifierTypo
@@ -115,7 +114,8 @@ public class Scanner
 
     private TokenType AddString()
     {
-        while (Peek() != '"' && !IsAtEnd()) {
+        while (Peek() != '"' && !IsAtEnd())
+        {
             if (Peek() == '\n')
             {
                 _line++;
@@ -175,7 +175,7 @@ public class Scanner
         {
             Advance();
         }
-        var text = _source[_start .. _current];
+        var text = _source[_start.._current];
         if (!_keywords.TryGetValue(text, out var type))
         {
             type = TokenType.IDENTIFIER;
@@ -187,7 +187,7 @@ public class Scanner
 
     private bool IsAtEnd() => _current >= _source.Length;
     private bool IsDigit(char c) => c >= '0' && c <= '9';
-    private bool IsAlpha(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+    private bool IsAlpha(char c) => c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
     private bool IsAlphaNumeric(char c) => IsAlpha(c) || IsDigit(c);
 
     private char Advance() => _source[_current++];

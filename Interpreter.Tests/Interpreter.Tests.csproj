@@ -21,9 +21,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Scanning\*.lox">
+    <None Update="LoxFiles\Scanning\*.lox">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="LoxFiles\Expressions\" />
   </ItemGroup>
 
 </Project>
