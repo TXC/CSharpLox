@@ -11,7 +11,7 @@ public class Tokenize : BaseCommand, ICommand
 
     public void Execute(params string[] args)
     {
-        var content = ParseFile();
+        var content = ParseFile(args);
 
         var scanner = new Scanner(content);
         var tokens = scanner.ScanTokens();
