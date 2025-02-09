@@ -18,7 +18,8 @@ namespace Interpreter.Tests
         public void TestLoxDataFiles(string filename)
         {
             var r = LoxExpect();
-            var content = File.ReadAllText(Path.Combine("Scanning", filename)).Trim();
+            var filePath = Path.Combine("Scanning", filename);
+            var content = File.ReadAllText(filePath).TrimEnd();
             var matches = r.Matches(content);
             var ss = new Scanner(content);
 

@@ -16,7 +16,7 @@ public class Tokenize : ICommand
         {
             throw new FileNotFoundException("File not found", source);
         }
-        var content = File.ReadAllText(source).Trim();
+        var content = File.ReadAllText(source).TrimEnd();
 
         var scanner = new Scanner(content);
         var tokens = scanner.ScanTokens();
