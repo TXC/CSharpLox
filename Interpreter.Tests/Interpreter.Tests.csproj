@@ -17,11 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Scanning\" />
+    <ProjectReference Include="..\Interpreter\Interpreter.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Interpreter\Interpreter.csproj" />
+    <None Update="Scanning\*.lox">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

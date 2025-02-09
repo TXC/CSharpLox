@@ -1,4 +1,5 @@
-﻿using CodeCrafters.Interpreter.Exceptions;
+﻿using System.Globalization;
+using CodeCrafters.Interpreter.Exceptions;
 using CodeCrafters.Interpreter.Tokens;
 using Microsoft.Extensions.Logging;
 
@@ -82,7 +83,7 @@ public class Scanner
                 '/' => Match('/') ? ReadUntilEol() : TokenType.SLASH,
                 ' ' or '\n' or '\r' or '\t' => TokenType.None,
                 '"' => AddString(),
-                _ => IsDigit(c) ? AddNumber() : IsAlpha(c) ? AddIdentifier() : AddInvalidToken(c)
+                _ => IsDigit(c) ? AddNumber() : IsAlpha(c) ? AddIdentifier() : AddInvalidToken("Unexpected character", c)
             };
 
             if (tokentype != TokenType.None)
@@ -90,14 +91,10 @@ public class Scanner
                 AddToken(tokentype);
             }
         }
-        catch (TokenException ex)
-        {
-            Console.Error.WriteLine($"[line {ex.Line}] Error: {ex.Message}: {ex.Character}");
-            IsValid = false;
-        }
         catch (LoxException ex)
         {
             _logger.LogError("Caught error: {error}", ex.Message);
+            return;
         }
 
         if (c == '\n')
@@ -128,9 +125,7 @@ public class Scanner
 
         if (IsAtEnd())
         {
-            IsValid = false;
-            _tokens.Add(new Token(null, "Unterminated string.", null, _line));
-            return TokenType.None;
+            return AddInvalidToken("Unterminated string.", null);
         }
 
         // The closing ".
@@ -161,7 +156,16 @@ public class Scanner
             }
         }
 
-        AddToken(TokenType.NUMBER, double.Parse(_source[_start .. _current]));
+        var value = _source[_start.._current];
+        if (double.TryParse(value, CultureInfo.InvariantCulture, out var z))
+        {
+            AddToken(TokenType.NUMBER, z);
+        }
+        else
+        {
+            return AddInvalidToken("Parse error.", value);
+        }
+
         return TokenType.None;
     }
 
@@ -191,12 +195,12 @@ public class Scanner
     private void AddToken(TokenType type) => AddToken(type, null);
 
     private void AddToken(TokenType type, object? literal)
-        => _tokens.Add(new Token(type, _source[_start.._current], literal, _line));
+        => _tokens.Add(new Token(type, _source[_start.._current], literal, _line, _start, _current));
 
-    private TokenType AddInvalidToken(object? literal)
+    private TokenType AddInvalidToken(string message, object? literal)
     {
         IsValid = false;
-        _tokens.Add(new Token(null, "Unexpected character", literal, _line));
+        _tokens.Add(new Token(null, message, literal, _line, _start, _current));
         return TokenType.None;
     }
 
