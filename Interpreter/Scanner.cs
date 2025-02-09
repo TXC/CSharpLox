@@ -33,8 +33,6 @@ public class Scanner
         {"while",  TokenType.WHILE},
     };
 
-    public bool IsValid { get; private set; }
-
     public Scanner(string source)
     {
         using var factory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -125,6 +123,7 @@ public class Scanner
 
         if (IsAtEnd())
         {
+            //Lox.Error(_line, "Unterminated string.");
             return AddInvalidToken("Unterminated string.", null);
         }
 
@@ -199,7 +198,6 @@ public class Scanner
 
     private TokenType AddInvalidToken(string message, object? literal)
     {
-        IsValid = false;
         _tokens.Add(new Token(null, message, literal, _line, _start, _current));
         return TokenType.None;
     }
