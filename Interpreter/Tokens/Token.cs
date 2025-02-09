@@ -1,5 +1,7 @@
 ﻿// ReSharper disable IdentifierTypo
 
+using System.Globalization;
+
 namespace CodeCrafters.Interpreter.Tokens;
 
 public class Token(TokenType? tokenType, string lexeme, object? literal, int line)
@@ -30,6 +32,12 @@ public class Token(TokenType? tokenType, string lexeme, object? literal, int lin
         if (Type is null)
         {
             return $"[line {Line}] Error: {Lexeme}: {Literal}";
+        }
+
+        if (Type is TokenType.NUMBER)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "{0} {1} {2:0.0#}", Type, Lexeme, Literal);
         }
 
         return $"{Type} {Lexeme} {Literal ?? "null"}";
