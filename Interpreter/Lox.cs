@@ -22,6 +22,18 @@ internal static class Lox
     public static void Error(int line, string message)
         => Report(line, "", message);
 
+    public static void CheckError()
+    {
+        if (Lox.HadError)
+        {
+            Environment.Exit(65);
+        }
+        if (Lox.HadRuntimeError)
+        {
+            Environment.Exit(70);
+        }
+    }
+
     public static void Error(Token token, string message)
     {
         if (token.Type == TokenType.EOF)

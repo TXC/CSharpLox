@@ -16,6 +16,8 @@ public class Parse : BaseCommand, ICommand
         var parser = new Parser(tokens);
         var expressions = parser.Parse();
 
+        Lox.CheckError();
+
         Console.WriteLine(new AstPrinter().Print(expressions));
     }
 
