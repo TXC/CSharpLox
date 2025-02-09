@@ -65,5 +65,30 @@ namespace Interpreter.Tests
                 Assert.AreEqual(expected[i].ToString(), tokens[i].ToString());
             }
         }
+
+        [TestMethod]
+        [DataRow("and", "AND and null")]
+        [DataRow("class", "CLASS class null")]
+        [DataRow("else", "ELSE else null")]
+        [DataRow("false", "FALSE false null")]
+        [DataRow("for", "FOR for null")]
+        [DataRow("fun", "FUN fun null")]
+        [DataRow("if", "IF if null")]
+        [DataRow("nil", "NIL nil null")]
+        [DataRow("or", "OR or null")]
+        [DataRow("print", "PRINT print null")]
+        [DataRow("return", "RETURN return null")]
+        [DataRow("super", "SUPER super null")]
+        [DataRow("this", "THIS this null")]
+        [DataRow("true", "TRUE true null")]
+        [DataRow("var", "VAR var null")]
+        [DataRow("while", "WHILE while null")]
+        public void TestKeywords(string input, string expected)
+        {
+            var scanner = new Scanner(input);
+            var tokens = scanner.ScanTokens();
+
+            Assert.AreEqual(expected, tokens[0].ToString());
+        }
     }
 }

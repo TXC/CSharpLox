@@ -63,5 +63,21 @@ namespace Interpreter.Tests
 
             Assert.AreEqual(expect, result);
         }
+
+        [TestMethod]
+        [DataRow("while", "")]
+        public void TestKeywordExpression(string input, string expect)
+        {
+            var scanner = new Scanner(input);
+            var tokens = scanner.ScanTokens();
+
+            var parser = new Parser(tokens);
+            var expressions = parser.Parse();
+
+            var ast = new AstPrinter();
+            var result = ast.Print(expressions);
+
+            Assert.AreEqual(expect, result);
+        }
     }
 }

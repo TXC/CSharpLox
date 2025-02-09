@@ -9,7 +9,8 @@
 
         public string ParseFile(params string[] args)
         {
-            var source = args[1];
+            var size = args.Count();
+            var source = args[size - 1];
             if (!File.Exists(source))
             {
                 throw new FileNotFoundException("File not found", source);

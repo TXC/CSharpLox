@@ -6,7 +6,7 @@ namespace CodeCrafters.Interpreter;
 
 internal class AstPrinter : Expr.IVisitor<string>
 {
-    public string Print(Expr expr) => expr.Accept(this);
+    public string Print(Expr? expr) => expr.Accept(this);
 
     public string VisitBinaryExpr(Expr.Binary expr)
         => Parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right);
