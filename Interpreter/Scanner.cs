@@ -42,7 +42,6 @@ public class Scanner
 
     public List<Token> ScanTokens()
     {
-        IsValid = true;
         while (!IsAtEnd())
         {
             _start = _current;
