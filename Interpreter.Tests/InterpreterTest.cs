@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using CodeCrafters.Interpreter;
+using CodeCrafters.Interpreter.Ast;
 using CodeCrafters.Interpreter.Exceptions;
 
 namespace Interpreter.Tests;
@@ -92,55 +93,48 @@ public sealed class InterpreterTest
         Assert.AreEqual(expect, result);
     }
 
-    //[TestMethod]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //public void TestEvaluatingExpressionsArithmeticOperators(string input, string expect)
-    //{
-    //    var result = TestInput(input);
-    //    Assert.AreEqual(expect, result);
-    //}
+    [TestMethod]
+    [DataRow("73 - 69", "4")]
+    [DataRow("42 + 69 - 66", "45")]
+    [DataRow("33 + 82 - (-(34 - 49))", "100")]
+    [DataRow("(-93 + 93) * (32 * 63) / (1 + 4)", "0")]
+    [DataRow("45 * 87", "3915")]
+    [DataRow("57 / 5", "11.4")]
+    [DataRow("7 * 3 / 7 / 1", "3")]
+    [DataRow("(18 * 3 / (3 * 6))", "3")]
+    public void TestEvaluatingExpressionsArithmeticOperators(string input, string expect)
+    {
+        var result = TestInput(input);
+        Assert.AreEqual(expect, result);
+    }
 
-    //[TestMethod]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //public void TestEvaluatingExpressions(string input, string expect)
-    //{
-    //    var result = TestInput(input);
-    //    Assert.AreEqual(expect, result);
-    //}
+    [TestMethod]
+    [DataRow("\"quz\" + \"quz\"", "quzquz")]
+    [DataRow("\"world\" + \"34\"", "world34")]
+    [DataRow("\"foo\" + \"foo\" + \"hello\"", "foofoohello")]
+    [DataRow("(\"foo\" + \"foo\") + (\"bar\" + \"quz\")", "foofoobarquz")]
+    public void TestEvaluatingExpressionsStringConcatenation(string input, string expect)
+    {
+        var result = TestInput(input);
+        Assert.AreEqual(expect, result);
+    }
 
-    //[TestMethod]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //public void TestEvaluatingExpressions(string input, string expect)
-    //{
-    //    var result = TestInput(input);
-    //    Assert.AreEqual(expect, result);
-    //}
-
-    //[TestMethod]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //public void TestEvaluatingExpressions(string input, string expect)
-    //{
-    //    var result = TestInput(input);
-    //    Assert.AreEqual(expect, result);
-    //}
+    [TestMethod]
+    [DataRow("98 > -151", "true")]
+    [DataRow("98 <= 241", "true")]
+    [DataRow("90 >= 90", "true")]
+    [DataRow("(58 - 99) >= -(196 / 98 + 45)", "true")]
+    public void TestEvaluatingExpressionsRelationalOperators(string input, string expect)
+    {
+        var result = TestInput(input);
+        Assert.AreEqual(expect, result);
+    }
 
     [TestMethod]
     [DataRow("\"hello\" != \"quz\"", "true")]
-    [DataRow("\"baz\" != \"bar\"", "true")]
-    [DataRow("\"baz\"!=\"world\"", "true")]
-    //[DataRow("", "")]
+    [DataRow("\"world\" == \"world\"", "true")]
+    [DataRow("28 == \"28\"", "false")]
+    [DataRow("166 == (92 + 74)", "true")]
     public void TestEvaluatingExpressionsEqualityOperators(string input, string expect)
     {
         var result = TestInput(input);
@@ -191,13 +185,13 @@ public sealed class InterpreterTest
     }
 
     [TestMethod]
-    [DataRow("\"bar\" < true")]
-    //[DataRow("")]
-    //[DataRow("")]
-    //[DataRow("")]
-    //[ExpectedException(typeof(LoxException))]
-    public void TestEvaluatingExpressions(string input)
+    [DataRow("// This program prints a boolean\nprint false;", "false")]
+    [DataRow("// This program prints the result of the concatenation of three strings\nprint \"quz\" + \"bar\" + \"foo\";", "quzbarfoo")]
+    [DataRow("// This program prints the result of an arithmetic expression\nprint (54 * 2 + 38 * 2) / (2);", "92")]
+    [DataRow("// Print statements expect an expression\n// So, this program leads to a compilation error\nprint;", "Error at ';': Expect expression.")]
+    public void TestStatementsAndStatePrintGenerateOutput(string input, string expect)
     {
-        TestInput(input);
+        var result = TestInput(input);
+        Assert.AreEqual(expect, result);
     }
 }
