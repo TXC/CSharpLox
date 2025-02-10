@@ -152,7 +152,7 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
     public void VisitPrintStmt(Stmt.Print stmt)
     {
         var value = Evaluate(stmt.Value);
-        _sb.Append(Stringify(value));
+        _sb.Append(Stringify(value) + "\n");
     }
 
     public void VisitVarStmt(Stmt.Var stmt)

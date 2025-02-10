@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using CodeCrafters.Interpreter.Exceptions;
 // ReSharper disable IdentifierTypo
 
@@ -115,6 +116,21 @@ internal static class Lox
 
     public static string AddPrintInput(string input)
     {
+        var lines = Regex.Split(input, @"[\n|\n\r|\r]");
+        //var lines = input.Split("\n");
+        for (var i = 0; i < lines.Length; i++)
+        {
+            lines[i] = InputAffix(lines[i]);
+        }
+        return string.Join("\n", lines);
+    }
+
+    private static string InputAffix(string input)
+    {
+        if (input.StartsWith("//"))
+        {
+            return input;
+        }
         if (input.Length < 5 || (input.Length >= 5 && input[..5] != "print"))
         {
             input = "print " + input;
