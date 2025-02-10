@@ -2,6 +2,7 @@
 using CodeCrafters.Interpreter;
 using CodeCrafters.Interpreter.Ast;
 using CodeCrafters.Interpreter.Exceptions;
+using static CodeCrafters.Interpreter.Stmt;
 
 namespace Interpreter.Tests;
 
@@ -26,7 +27,7 @@ public sealed class InterpreterTest
         Assert.IsNotNull(filePath);
     }
 
-    private static string TestInput(string source)
+    private static string TestInputEvaluation(string source)
     {
         var input = Lox.AddPrintInput(source);
 
@@ -34,10 +35,10 @@ public sealed class InterpreterTest
         var tokens = scanner.ScanTokens();
 
         var parser = new Parser(tokens);
-        var expression = parser.Parse();
+        var statements = parser.Parse();
         var interpreter = new CodeCrafters.Interpreter.Interpreter();
 
-        var res = interpreter.Run(expression);
+        var res = interpreter.Run(statements);
         //if (Lox.HadError)
         //{
         //    throw new LoxException(64, "Has Error");
@@ -50,13 +51,28 @@ public sealed class InterpreterTest
         return res.Trim();
     }
 
+    private static string TestInputStatement(string source)
+    {
+        var input = source;
+
+        var scanner = new Scanner(input);
+        var tokens = scanner.ScanTokens();
+
+        var parser = new Parser(tokens);
+        var statements = parser.Parse();
+        var interpreter = new CodeCrafters.Interpreter.Interpreter();
+
+        var res = interpreter.Run(statements);
+        return res.Trim();
+    }
+
     [TestMethod]
     [DataRow("true", "true")]
     [DataRow("false", "false")]
     [DataRow("nil", "nil")]
     public void TestEvaluatingExpressionsLiteralsBooleansAndNil(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.AreEqual(expect.Trim(), result);
     }
 
@@ -67,7 +83,7 @@ public sealed class InterpreterTest
     [DataRow("\"25\"", "25")]
     public void TestEvaluatingExpressionsLiteralsStringsAndNumbers(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.AreEqual(expect.Trim(), result);
     }
 
@@ -78,7 +94,7 @@ public sealed class InterpreterTest
     [DataRow("((false))", "false")]
     public void TestEvaluatingExpressionsLiteralsParentheses(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.AreEqual(expect.Trim(), result);
     }
 
@@ -89,7 +105,7 @@ public sealed class InterpreterTest
     [DataRow("(!!75)", "true")]
     public void TestEvaluatingExpressionsUnaryOperatorsNegationAndNot(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.AreEqual(expect.Trim(), result);
     }
 
@@ -104,7 +120,7 @@ public sealed class InterpreterTest
     [DataRow("(18 * 3 / (3 * 6))", "3")]
     public void TestEvaluatingExpressionsArithmeticOperators(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.AreEqual(expect.Trim(), result);
     }
 
@@ -115,7 +131,7 @@ public sealed class InterpreterTest
     [DataRow("(\"foo\" + \"foo\") + (\"bar\" + \"quz\")", "foofoobarquz")]
     public void TestEvaluatingExpressionsStringConcatenation(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.AreEqual(expect.Trim(), result);
     }
 
@@ -126,7 +142,7 @@ public sealed class InterpreterTest
     [DataRow("(58 - 99) >= -(196 / 98 + 45)", "true")]
     public void TestEvaluatingExpressionsRelationalOperators(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.AreEqual(expect.Trim(), result);
     }
 
@@ -137,7 +153,7 @@ public sealed class InterpreterTest
     [DataRow("166 == (92 + 74)", "true")]
     public void TestEvaluatingExpressionsEqualityOperators(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.AreEqual(expect.Trim(), result);
     }
 
@@ -148,7 +164,7 @@ public sealed class InterpreterTest
     [DataRow("-(\"baz\" + \"baz\")")]
     public void TestEvaluatingExpressionsRuntimeErrorsUnaryOperators(string input)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.IsTrue(Lox.HadRuntimeError);
         Assert.IsFalse(Lox.HadError);
         Assert.AreEqual("", result);
@@ -165,7 +181,7 @@ public sealed class InterpreterTest
     [DataRow("(\"world\" + \"hello\") * (\"baz\" + \"hello\")")]
     public void TestEvaluatingExpressionsRuntimeErrorsBinaryOperators(string input)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.IsTrue(Lox.HadRuntimeError);
         Assert.IsFalse(Lox.HadError);
         Assert.AreEqual("", result);
@@ -178,7 +194,7 @@ public sealed class InterpreterTest
     [DataRow("false >= true")]
     public void TestEvaluatingExpressionsRuntimeErrorsRelationalOperators(string input)
     {
-        var result = TestInput(input);
+        var result = TestInputEvaluation(input);
         Assert.IsTrue(Lox.HadRuntimeError);
         Assert.IsFalse(Lox.HadError);
         Assert.AreEqual("", result);
@@ -191,19 +207,40 @@ public sealed class InterpreterTest
     [DataRow("// Print statements expect an expression\n// So, this program leads to a compilation error\nprint;", "")]
     public void TestStatementsAndStatePrintGenerateOutput(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputStatement(input);
         Assert.AreEqual(expect.Trim(), result);
     }
 
     [TestMethod]
     [DataRow("// This program prints the result of arithmetic operations involving strings and integers\nprint \"baz\" + \"bar\" + \"world\";\nprint 70 - 91;\nprint \"world\" == \"hello\";", "bazbarworld\n-21\nfalse\n")]
-    //[DataRow("","")]
-    //[DataRow("","")]
-    //[DataRow("","")]
+    [DataRow("// This program tests the syntax of multiple statements in a single line\nprint \"quz\"; print true;\nprint true;\nprint \"foo\"; print 28;","quz\ntrue\ntrue\nfoo\n28\n")]
+    [DataRow("print 89;\n   print 89 + 19;\n       print 89 + 19 + 44;\n","89\n108\n152\n")]
+    [DataRow("// This program prints the result of a comparison operation\n"+
+             "// It also tests multi-line strings and non-ASCII characters\n" +
+             "print false != false;\n\n" +
+             "print \"87\n67\n30\n\";\n\n" +
+             "print \"There should be an empty line above this.\";\n\n" +
+             "print \"(\" + \"\" + \")\";\n\n" +
+             "print \"non-ascii: ॐ\";\n",
+              "false\n87\n67\n30\n\nThere should be an empty line above this.\n()\nnon-ascii: ॐ\n")]
     public void TestStatementsAndStatePrintMultipleStatements(string input, string expect)
     {
-        var result = TestInput(input);
+        var result = TestInputStatement(input);
 
         Assert.AreEqual(expect.Trim(), result);
+    }
+
+
+    [TestMethod]
+    [DataRow("// This program tests that variables are initialized to the correct value\nvar bar = 10;\nprint bar;", "10")]
+    //[DataRow("true <= (38 + 29)")]
+    //[DataRow("94 > (\"quz\" + \"hello\")")]
+    //[DataRow("false >= true")]
+    public void TestStatementsAndStateVariablesDeclareVariables(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        //Assert.IsTrue(Lox.HadRuntimeError);
+        //Assert.IsFalse(Lox.HadError);
+        Assert.AreEqual(expect, result);
     }
 }

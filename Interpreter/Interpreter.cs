@@ -158,7 +158,7 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
     public void VisitVarStmt(Stmt.Var stmt)
     {
         object value = null;
-        if (stmt.Initializer is null)
+        if (stmt.Initializer is not null)
         {
             value = Evaluate(stmt.Initializer);
         }

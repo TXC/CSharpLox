@@ -24,8 +24,8 @@ internal static class Lox
             return;
         }
 
-        Console.Error.WriteLine("Running Following:");
-        Console.Error.WriteLine(source);
+        //Console.Error.WriteLine("Running Following:");
+        //Console.Error.WriteLine(source);
 
         //Interpreter.Interpret(expression);
         Interpreter.Interpret(statements);
