@@ -38,14 +38,7 @@ public class Program
             var methodInfo = type.GetMethod("Execute");
             var result = methodInfo?.Invoke(classInstance, [args]);
 
-            if (Lox.HadError)
-            {
-                System.Environment.Exit(65);
-            }
-            if (Lox.HadRuntimeError)
-            {
-                System.Environment.Exit(70);
-            }
+            Lox.CheckAndHaltOnError();
             System.Environment.Exit(0);
         }
         catch (Exception ex)

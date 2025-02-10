@@ -22,16 +22,28 @@ internal static class Lox
         return Lox.HadError || Lox.HadRuntimeError;
     }
 
-    public static void CheckAndHaltOnError()
+    public static void HaltOnError()
     {
         if (Lox.HadError)
         {
+            Console.Error.WriteLine("HadError = true");
             System.Environment.Exit(65);
         }
+    }
+
+    public static void HaltOnRuntimeError()
+    {
         if (Lox.HadRuntimeError)
         {
+            Console.Error.WriteLine("HadRuntimeError = true");
             System.Environment.Exit(70);
         }
+    }
+
+    public static void CheckAndHaltOnError()
+    {
+        HaltOnRuntimeError();
+        HaltOnError();
     }
 
     public static void Error(Token token, string message)
