@@ -7,6 +7,59 @@ internal static class Lox
 {
     public static bool HadError = false;
     public static bool HadRuntimeError = false;
+    private static readonly Interpreter Interpreter = new Interpreter();
+
+    public static void Run(string source)
+    {
+        var scanner = new Scanner(source);
+        var tokens = scanner.ScanTokens();
+        var parser = new Parser(tokens);
+        //var expression = parser.Parse();
+        var statements = parser.Parse();
+        
+        // Stop if there was a syntax error.
+        if (HadError)
+        {
+            return;
+        }
+        
+        //Interpreter.Interpret(expression);
+        Interpreter.Interpret(statements);
+    }
+
+    public static void RunFile(string path)
+    {
+        var source = File.ReadAllText(path).TrimEnd();
+        Run(source);
+
+        // Indicate an error in the exit code.
+        if (HadError)
+        {
+            System.Environment.Exit(65);
+        }
+        if (HadRuntimeError)
+        {
+            System.Environment.Exit(70);
+        }
+    }
+
+    public static void RunPrompt()
+    {
+        using var memory = new MemoryStream();
+        using var reader = new StreamReader(memory);
+        Console.SetIn(reader);
+        for (;;) { 
+            Console.Write("> ");
+            var line = Console.ReadLine();
+            //var line = reader.readLine();
+            if (line == null)
+            {
+                break;
+            }
+            Run(line);
+            HadError = false;
+        }
+    }
 
     public static void Report(int line, string where, string message)
     {

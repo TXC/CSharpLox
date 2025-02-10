@@ -146,7 +146,8 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
     public void VisitBlockStmt(Stmt.Block stmt)
         => ExecuteBlock(stmt.Statements, new Environment(_environment));
 
-    public void VisitExpressionStmt(Stmt.Expression stmt) => Evaluate(stmt.Value);
+    public void VisitExpressionStmt(Stmt.Expression stmt)
+        => Evaluate(stmt.Value);
 
     public void VisitPrintStmt(Stmt.Print stmt)
     {

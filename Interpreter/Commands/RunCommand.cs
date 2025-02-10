@@ -8,17 +8,13 @@ public class RunCommand : BaseCommand, ICommand
 {
     public void Execute(params string[] args)
     {
-        var content = ParseFile(args);
-        var scanner = new Scanner(content);
-        var tokens = scanner.ScanTokens();
+        var size = args.Count();
+        var source = args[size - 1];
+        if (!File.Exists(source))
+        {
+            throw new FileNotFoundException("File not found", source);
+        }
 
-        var parser = new Parser(tokens);
-        var expression = parser.Parse();
-        var interpreter = new Interpreter();
-
-        Lox.CheckAndHaltOnError();
-
-        interpreter.Interpret(expression);
-        //Console.WriteLine(new AstPrinter().Print(expression));
+        Lox.RunFile(source);
     }
 }

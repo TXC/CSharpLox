@@ -34,17 +34,15 @@ public sealed class InterpreterTest
         var expression = parser.Parse();
         var interpreter = new CodeCrafters.Interpreter.Interpreter();
 
-        if (Lox.HadError)
-        {
-            throw new LoxException(64, "Has Error");
-        }
-
         var res = interpreter.Run(expression);
-
-        if (Lox.HadRuntimeError)
-        {
-            throw new LoxException(70, "Has Error");
-        }
+        //if (Lox.HadError)
+        //{
+        //    throw new LoxException(64, "Has Error");
+        //}
+        //if (Lox.HadRuntimeError)
+        //{
+        //    throw new LoxException(70, "Has Runtime Error");
+        //}
 
         return res;
     }
@@ -136,23 +134,66 @@ public sealed class InterpreterTest
     //    Assert.AreEqual(expect, result);
     //}
 
-    //[TestMethod]
+    [TestMethod]
+    [DataRow("\"hello\" != \"quz\"", "true")]
     //[DataRow("", "")]
     //[DataRow("", "")]
     //[DataRow("", "")]
-    //[DataRow("", "")]
-    //public void TestEvaluatingExpressions(string input, string expect)
-    //{
-    //    var result = TestInput(input);
-    //    Assert.AreEqual(expect, result);
-    //}
+    public void TestEvaluatingExpressionsEqualityOperators(string input, string expect)
+    {
+        var result = TestInput(input);
+        Assert.AreEqual(expect, result);
+    }
+
+    [TestMethod]
+    [DataRow("-\"foo\"")]
+    [DataRow("-true")]
+    [DataRow("-false")]
+    [DataRow("-(\"baz\" + \"baz\")")]
+    public void TestEvaluatingExpressionsRuntimeErrorsUnaryOperators(string input)
+    {
+        var result = TestInput(input);
+        Assert.IsTrue(Lox.HadRuntimeError);
+        Assert.IsFalse(Lox.HadError);
+        Assert.AreEqual("", result);
+    }
+
+    [TestMethod]
+    [DataRow("\"bar\" + false")]
+    [DataRow("65 + \"quz\" + 12")]
+    [DataRow("79 - false")]
+    [DataRow("false - (\"hello\" + \"world\")")]
+    [DataRow("66 * \"foo\"")]
+    [DataRow("\"hello\" / 84")]
+    [DataRow("true / false")]
+    [DataRow("(\"world\" + \"hello\") * (\"baz\" + \"hello\")")]
+    public void TestEvaluatingExpressionsRuntimeErrorsBinaryOperators(string input)
+    {
+        var result = TestInput(input);
+        Assert.IsTrue(Lox.HadRuntimeError);
+        Assert.IsFalse(Lox.HadError);
+        Assert.AreEqual("", result);
+    }
+
+    [TestMethod]
+    [DataRow("\"quz\" < true")]
+    [DataRow("true <= (38 + 29)")]
+    [DataRow("94 > (\"quz\" + \"hello\")")]
+    [DataRow("false >= true")]
+    public void TestEvaluatingExpressionsRuntimeErrorsRelationalOperators(string input)
+    {
+        var result = TestInput(input);
+        Assert.IsTrue(Lox.HadRuntimeError);
+        Assert.IsFalse(Lox.HadError);
+        Assert.AreEqual("", result);
+    }
 
     [TestMethod]
     [DataRow("\"bar\" < true")]
     //[DataRow("")]
     //[DataRow("")]
     //[DataRow("")]
-    [ExpectedException(typeof(LoxException))]
+    //[ExpectedException(typeof(LoxException))]
     public void TestEvaluatingExpressions(string input)
     {
         TestInput(input);
