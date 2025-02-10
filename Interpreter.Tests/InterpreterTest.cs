@@ -230,12 +230,22 @@ public sealed class InterpreterTest
         Assert.AreEqual(expect.Trim(), result);
     }
 
+    [TestMethod]
+    [DataRow("// This program tests that statements are executed even if they don't have any side effects\n// It also tests complex arithmetic expressions and string concatenation\n(25 + 55 - 77) > (69 - 25) * 2;\nprint !false;\n\"foo\" + \"hello\" + \"baz\" + \"quz\" == \"foohellobazquz\";\nprint !false;", "true\ntrue")]
+    [DataRow("// This program tests statements that don't have any side effects\n41 - 80 >= -15 * 2 / 15 + 97;\nfalse == false;\n(\"bar\" == \"baz\") == (\"quz\" != \"hello\");\nprint false;\n", "false")]
+    [DataRow("// This program tests that the + operator is only supported when both operands are numbers or both are strings\nprint \"the expression below is invalid\";\n59 + \"hello\";\nprint \"this should not be printed\";\n", "the expression below is invalid")]
+    [DataRow("// This program tests that the * operator is only supported when both operands are numbers\nprint \"97\" + \"hello\";\nprint true * (51 + 20);\n", "97hello")]
+    public void TestStatementsAndStateExpressionStatements(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        Assert.AreEqual(expect, result);
+    }
 
     [TestMethod]
     [DataRow("// This program tests that variables are initialized to the correct value\nvar bar = 10;\nprint bar;", "10")]
-    //[DataRow("true <= (38 + 29)")]
-    //[DataRow("94 > (\"quz\" + \"hello\")")]
-    //[DataRow("false >= true")]
+    [DataRow("// This program declares multiple variables and<|SPACE|>// prints the result of arithmetic operations on them\nvar foo = 89;\nvar hello = 89;\nprint foo + hello;\nvar baz = 89;\nprint foo + hello + baz;\n", "178\n267")]
+    [DataRow("// This program assigns the result of an arithmetic expression to a variable\n// Then it prints the value of the variable\nvar bar = (8 * (56 + 56)) / 4 + 56;\nprint bar;\n", "280")]
+    [DataRow("// This program declares variables and performs operations on them\n// Finally it prints the result of the operations\nvar baz = 47;\nvar bar = baz;\nprint bar + baz;\n", "94")]
     public void TestStatementsAndStateVariablesDeclareVariables(string input, string expect)
     {
         var result = TestInputStatement(input);
@@ -243,4 +253,76 @@ public sealed class InterpreterTest
         //Assert.IsFalse(Lox.HadError);
         Assert.AreEqual(expect, result);
     }
+
+    [TestMethod]
+    [DataRow("// This program tries to access a variable before it is declared\n// It leads to a runtime error\nprint 96;\nprint x;\n", "96")]
+    [DataRow("// This program tries to access a variable before it is declared\n// It leads to a runtime error\nvar bar = 29;\nprint hello;\n", "")]
+    [DataRow("// This program tries to access a variable before it is declared\n// It leads to a runtime error\nvar foo = 33;\nvar result = (foo + quz) / world;\nprint result;\n", "")]
+    [DataRow("// This program tries to access a variable befdecore it is lared\n// It leads to a runtime error\nvar quz = 34;\nvar baz = 21;\nvar bar = 27;\nprint quz + baz + bar + world; print 33;\n", "")]
+    public void TestStatementsAndStateVariablesRuntimeErrors(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        Assert.IsTrue(Lox.HadRuntimeError);
+        Assert.IsFalse(Lox.HadError);
+        Assert.AreEqual(expect, result);
+    }
+
+
+    [TestMethod]
+    [DataRow("// This program declares a variable but doesn't initialize it\n// It prints the variable's value, which should be nil\nvar baz;\nprint baz;\n", "nil")]
+    [DataRow("// This program declares a variable but doesn't initialize it\n// It prints the variable's value\nvar foo = \"baz\";\nvar bar;\nprint bar;", "nil")]
+    [DataRow("// This program declares a variable but doesn't initialize it\n// It prints the variable's value\nvar bar = 45;\nvar baz;\nvar quz;\nprint baz;\n", "nil")]
+    [DataRow("// This program declares a variable but doesn't initialize it\n// It prints the variable's value\nvar quz = 70 + 15 * 62;\nprint quz;\nvar hello = 15 * 62;\nprint quz + hello;\nvar baz;\nprint baz;", "1000\n1930\nnil")]
+    public void TestStatementsAndStateVariablesInitializeVariables(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        Assert.AreEqual(expect, result);
+    }
+
+    [TestMethod]
+    [DataRow("// This program declares a variable and prints its value\n// It then redeclares the variable and prints its value again\nvar baz = \"before\";\nprint baz;\nvar baz = \"after\";\nprint baz;\n", "before\nbefore")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    public void TestStatementsAndStateVariablesRedeclareVariables(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        Assert.AreEqual(expect, result);
+    }
+
+
+
+
+    //[TestMethod]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //public void TestStatementsAndState(string input, string expect)
+    //{
+    //    var result = TestInputStatement(input);
+    //    Assert.AreEqual(expect, result);
+    //}
+
+    //[TestMethod]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //public void TestStatementsAndState(string input, string expect)
+    //{
+    //    var result = TestInputStatement(input);
+    //    Assert.AreEqual(expect, result);
+    //}
+
+    //[TestMethod]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //public void TestStatementsAndState(string input, string expect)
+    //{
+    //    var result = TestInputStatement(input);
+    //    Assert.AreEqual(expect, result);
+    //}
 }
