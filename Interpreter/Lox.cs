@@ -1,9 +1,4 @@
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using CodeCrafters.Interpreter.Attributes;
-using CodeCrafters.Interpreter.Commands;
 using CodeCrafters.Interpreter.Exceptions;
-using Microsoft.Extensions.Logging;
 // ReSharper disable IdentifierTypo
 
 namespace CodeCrafters.Interpreter;
@@ -31,11 +26,11 @@ internal static class Lox
     {
         if (Lox.HadError)
         {
-            Environment.Exit(65);
+            System.Environment.Exit(65);
         }
         if (Lox.HadRuntimeError)
         {
-            Environment.Exit(70);
+            System.Environment.Exit(70);
         }
     }
 

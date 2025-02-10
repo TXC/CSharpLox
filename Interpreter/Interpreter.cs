@@ -1,10 +1,31 @@
 ﻿using System.Globalization;
+using System.Text;
 using CodeCrafters.Interpreter.Exceptions;
+// ReSharper disable IdentifierTypo
 
 namespace CodeCrafters.Interpreter;
 
-public class Interpreter : Expr.IVisitor<object?>
+internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
 {
+    private readonly StringBuilder _sb = new StringBuilder();
+    private Environment _environment = new Environment();
+
+    public string Run(List<Stmt> statements)
+    {
+        try
+        {
+            foreach (var statement in statements)
+            {
+                Execute(statement);
+            }
+        }
+        catch (RuntimeException error)
+        {
+            Lox.RuntimeError(error);
+        }
+        return _sb.ToString();
+    }
+
     public string Run(Expr expression)
     {
         try
@@ -21,9 +42,10 @@ public class Interpreter : Expr.IVisitor<object?>
     }
 
     public void Interpret(Expr expression)
-    {
-        Console.WriteLine(Run(expression));
-    }
+        => Console.WriteLine(Run(expression));
+
+    public void Interpret(List<Stmt> statements)
+        => Console.WriteLine(Run(statements));
 
     public object? VisitBinaryExpr(Expr.Binary expr)
     {
@@ -94,10 +116,63 @@ public class Interpreter : Expr.IVisitor<object?>
         return null;
     }
 
-    private object Evaluate(Expr expr)
+    public object? VisitVariableExpr(Expr.Variable expr)
+        => _environment.Get(expr.Name);
+
+    private object? Evaluate(Expr expr)
         => expr.Accept(this);
 
-    private bool IsTruthy(object? obj)
+    private void Execute(Stmt stmt)
+        => stmt.Accept(this);
+
+    public void ExecuteBlock(List<Stmt> statements, Environment environment)
+    {
+        var previous = _environment;
+        try
+        {
+            _environment = environment;
+
+            foreach (var statement in statements)
+            {
+                Execute(statement);
+            }
+        }
+        finally
+        {
+            _environment = previous;
+        }
+    }
+
+    public void VisitBlockStmt(Stmt.Block stmt)
+        => ExecuteBlock(stmt.Statements, new Environment(_environment));
+
+    public void VisitExpressionStmt(Stmt.Expression stmt) => Evaluate(stmt.Value);
+
+    public void VisitPrintStmt(Stmt.Print stmt)
+    {
+        var value = Evaluate(stmt.Value);
+        _sb.Append(Stringify(value));
+    }
+
+    public void VisitVarStmt(Stmt.Var stmt)
+    {
+        object value = null;
+        if (stmt.Initializer is null)
+        {
+            value = Evaluate(stmt.Initializer);
+        }
+
+        _environment.Define(stmt.Name.Lexeme, value);
+    }
+
+    public object VisitAssignExpr(Expr.Assign expr)
+    {
+        var value = Evaluate(expr.Value);
+        _environment.Assign(expr.Name, value);
+        return value;
+    }
+
+    private static bool IsTruthy(object? obj)
     {
         if (obj is null)
         {
@@ -111,7 +186,7 @@ public class Interpreter : Expr.IVisitor<object?>
         return true;
     }
 
-    private bool IsEqual(object? a, object? b)
+    private static bool IsEqual(object? a, object? b)
     {
         if (a is null && b is null)
         {
@@ -126,7 +201,7 @@ public class Interpreter : Expr.IVisitor<object?>
         return a.Equals(b);
     }
 
-    private void CheckNumberOperand(Token token, object operand)
+    private static void CheckNumberOperand(Token token, object operand)
     {
         if (operand is double)
         {
@@ -135,7 +210,7 @@ public class Interpreter : Expr.IVisitor<object?>
         throw new RuntimeException(token, "Operand must be a number.");
     }
 
-    private void CheckNumberOperands(Token token, object left, object right)
+    private static void CheckNumberOperands(Token token, object left, object right)
     {
         if (left is double && right is double)
         {
@@ -144,7 +219,7 @@ public class Interpreter : Expr.IVisitor<object?>
         throw new RuntimeException(token, "Operands must be a numbers.");
     }
 
-    private string Stringify(object? obj)
+    private static string Stringify(object? obj)
     {
         if (obj is null)
         {
@@ -165,6 +240,6 @@ public class Interpreter : Expr.IVisitor<object?>
             return text;
         }
 
-        return obj.ToString();
+        return obj.ToString() ?? "";
     }
 }

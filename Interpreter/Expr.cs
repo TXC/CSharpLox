@@ -2,49 +2,57 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+// ReSharper disable IdentifierTypo
 
 namespace CodeCrafters.Interpreter;
 
-public abstract class Expr {
+internal abstract class Expr {
   public interface IVisitor<out T> {
+    T VisitAssignExpr(Assign expr);
     T VisitBinaryExpr(Binary expr);
     T VisitGroupingExpr(Grouping expr);
     T VisitLiteralExpr(Literal expr);
     T VisitUnaryExpr(Unary expr);
+    T VisitVariableExpr(Variable expr);
   }
-  public class Binary(Expr Left, Token Operator, Expr Right) : Expr
+  public class Assign(Token name, Expr value) : Expr
   {
-    public Expr Left { get; set; } = Left;
-    public Token Operator { get; set; } = Operator;
-    public Expr Right { get; set; } = Right;
-    public override T Accept<T>(IVisitor<T> visitor) {
-      return visitor.VisitBinaryExpr(this);
-    }
+    public Token Name { get; set; } = name;
+    public Expr Value { get; set; } = value;
+    public override T Accept<T>(IVisitor<T> visitor) => visitor.VisitAssignExpr(this);
   }
 
-  public class Grouping(Expr Expression) : Expr
+  public class Binary(Expr left, Token @operator, Expr right) : Expr
   {
-    public Expr Expression { get; set; } = Expression;
-    public override T Accept<T>(IVisitor<T> visitor) {
-      return visitor.VisitGroupingExpr(this);
-    }
+    public Expr Left { get; set; } = left;
+    public Token Operator { get; set; } = @operator;
+    public Expr Right { get; set; } = right;
+    public override T Accept<T>(IVisitor<T> visitor) => visitor.VisitBinaryExpr(this);
   }
 
-  public class Literal(object? Value) : Expr
+  public class Grouping(Expr expression) : Expr
   {
-    public object? Value { get; set; } = Value;
-    public override T Accept<T>(IVisitor<T> visitor) {
-      return visitor.VisitLiteralExpr(this);
-    }
+    public Expr Expression { get; set; } = expression;
+    public override T Accept<T>(IVisitor<T> visitor) => visitor.VisitGroupingExpr(this);
   }
 
-  public class Unary(Token Operator, Expr Right) : Expr
+  public class Literal(object? value) : Expr
   {
-    public Token Operator { get; set; } = Operator;
-    public Expr Right { get; set; } = Right;
-    public override T Accept<T>(IVisitor<T> visitor) {
-      return visitor.VisitUnaryExpr(this);
-    }
+    public object? Value { get; set; } = value;
+    public override T Accept<T>(IVisitor<T> visitor) => visitor.VisitLiteralExpr(this);
+  }
+
+  public class Unary(Token @operator, Expr right) : Expr
+  {
+    public Token Operator { get; set; } = @operator;
+    public Expr Right { get; set; } = right;
+    public override T Accept<T>(IVisitor<T> visitor) => visitor.VisitUnaryExpr(this);
+  }
+
+  public class Variable(Token name) : Expr
+  {
+    public Token Name { get; set; } = name;
+    public override T Accept<T>(IVisitor<T> visitor) => visitor.VisitVariableExpr(this);
   }
 
   public abstract T Accept<T>(IVisitor<T> visitor);

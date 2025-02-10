@@ -9,7 +9,7 @@ public class Scanner
 {
     //private readonly string _source = source;
     private readonly string _source;
-    private List<Token> _tokens = [];
+    private readonly List<Token> _tokens = [];
     private int _start = 0;
     private int _current = 0;
     private int _line = 1;
@@ -184,9 +184,9 @@ public class Scanner
     }
 
     private bool IsAtEnd() => _current >= _source.Length;
-    private bool IsDigit(char c) => c >= '0' && c <= '9';
-    private bool IsAlpha(char c) => c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
-    private bool IsAlphaNumeric(char c) => IsAlpha(c) || IsDigit(c);
+    private static bool IsDigit(char c) => c >= '0' && c <= '9';
+    private static bool IsAlpha(char c) => c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
+    private static bool IsAlphaNumeric(char c) => IsAlpha(c) || IsDigit(c);
 
     private char Advance() => _source[_current++];
 

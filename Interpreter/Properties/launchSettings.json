@@ -28,7 +28,8 @@
     "Tooling.GenerateAST": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "commandLineArgs": "generate_ast data",
+      //"commandLineArgs": "generate_ast data",
+      "commandLineArgs": "generate_ast",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }

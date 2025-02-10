@@ -1,5 +1,3 @@
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using CodeCrafters.Interpreter.Attributes;
 using CodeCrafters.Interpreter.Commands;
 using Microsoft.Extensions.Logging;
@@ -16,10 +14,10 @@ public class Program
 
         try
         {
-            if (args.Length < 2)
+            if (args.Length < 1)
             {
-                Console.Error.WriteLine("Usage: ./your_program.sh tokenize <filename>");
-                Environment.Exit(1);
+                Console.Error.WriteLine("Usage: ./your_program.sh <command> [arguments]");
+                System.Environment.Exit(1);
             }
 
             var types = AttributeHelper.GetAttributeTypes<ICommand, CommandAttribute>(x => x.Command == args[0]);
@@ -27,12 +25,12 @@ public class Program
             if (types.Count > 1)
             {
                 log.LogError("Ambiguous command: {argument}", args[0]);
-                Environment.Exit(1);
+                System.Environment.Exit(1);
             }
             else if (types.Count == 0)
             {
                 log.LogError("Unknown command: {argument}", args[0]);
-                Environment.Exit(1);
+                System.Environment.Exit(1);
             }
 
             var type = types.Single();
@@ -42,17 +40,17 @@ public class Program
 
             if (Lox.HadError)
             {
-                Environment.Exit(65);
+                System.Environment.Exit(65);
             }
             if (Lox.HadRuntimeError)
             {
-                Environment.Exit(70);
+                System.Environment.Exit(70);
             }
-            Environment.Exit(0);
+            System.Environment.Exit(0);
         }
         catch (Exception ex)
         {
-            log.LogError(ex, ex.Message);
+            log.LogError(ex, "{message}", ex.Message);
         }
     }
 }

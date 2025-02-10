@@ -1,11 +1,10 @@
 ﻿using CodeCrafters.Interpreter.Attributes;
-
 // ReSharper disable IdentifierTypo
 
 namespace CodeCrafters.Interpreter.Commands;
 
-[Command("parse")]
-public class Parse : BaseCommand, ICommand
+[Command("evaluate")]
+public class EvaluateCommand : BaseCommand, ICommand
 {
     public void Execute(params string[] args)
     {
@@ -14,11 +13,13 @@ public class Parse : BaseCommand, ICommand
         var tokens = scanner.ScanTokens();
 
         var parser = new Parser(tokens);
-        var expressions = parser.Parse();
+        var expression = parser.Parse();
+        var interpreter = new Interpreter();
 
         Lox.CheckAndHaltOnError();
 
-        Console.WriteLine(new AstPrinter().Print(expressions));
+        interpreter.Interpret(expression);
+        //Console.WriteLine(new AstPrinter().Print(expression));
     }
-
 }
+

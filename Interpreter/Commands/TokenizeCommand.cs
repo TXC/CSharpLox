@@ -5,9 +5,9 @@
 namespace CodeCrafters.Interpreter.Commands;
 
 [Command("tokenize")]
-public class Tokenize : BaseCommand, ICommand
+public class TokenizeCommand : BaseCommand, ICommand
 {
-    public Tokenize() { }
+    public TokenizeCommand() { }
 
     public void Execute(params string[] args)
     {
@@ -28,9 +28,6 @@ public class Tokenize : BaseCommand, ICommand
             }
         }
 
-        if (Lox.HadError)
-        {
-            Environment.Exit(65);
-        }
+        Lox.CheckAndHaltOnError();
     }
 }
