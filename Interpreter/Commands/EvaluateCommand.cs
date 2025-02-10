@@ -13,4 +13,3 @@ public class EvaluateCommand : BaseCommand, ICommand
         Lox.Run(content);
     }
 }
-

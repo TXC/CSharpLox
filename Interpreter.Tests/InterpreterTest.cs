@@ -139,7 +139,7 @@ public sealed class InterpreterTest
     [TestMethod]
     [DataRow("\"hello\" != \"quz\"", "true")]
     [DataRow("\"baz\" != \"bar\"", "true")]
-    //[DataRow("", "")]
+    [DataRow("\"baz\"!=\"world\"", "true")]
     //[DataRow("", "")]
     public void TestEvaluatingExpressionsEqualityOperators(string input, string expect)
     {
