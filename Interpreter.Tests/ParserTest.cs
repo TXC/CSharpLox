@@ -1,5 +1,5 @@
 ﻿using CodeCrafters.Interpreter;
-using CodeCrafters.Interpreter.Commands;
+using CodeCrafters.Interpreter.Ast;
 
 namespace Interpreter.Tests
 {
@@ -30,31 +30,31 @@ namespace Interpreter.Tests
         }
         */
 
-        private string TestInput(string input)
+        private static string TestInput(string input)
         {
-            var scanner = new Scanner(input);
+            var scanner = new Scanner($"{input};");
             var tokens = scanner.ScanTokens();
 
             var parser = new Parser(tokens);
             var expressions = parser.Parse();
 
-            if (expressions is null)
+            if (expressions.Count == 0)
             {
                 return "";
             }
 
-            var ast = new AstPrinter();
+            var ast = new CodeCrafters.Interpreter.Ast.Printer();
             return ast.Print(expressions);
         }
 
         [TestMethod]
-        [DataRow("\"baz", "")]
-        [DataRow("(foo", "")]
-        [DataRow("(88 +)", "")]
-        [DataRow("+", "")]
-        public void TestParsingExpressionsSyntacticErrors(string input, string expect)
+        [DataRow("\"baz")]
+        [DataRow("(foo")]
+        [DataRow("(88 +)")]
+        [DataRow("+")]
+        public void TestParsingExpressionsSyntacticErrors(string input)
         {
-            var result = TestInput(input);
+            TestInput(input);
             //Assert.AreEqual(expect, result);
             Assert.IsTrue(Lox.HadError);
         }
@@ -150,8 +150,8 @@ namespace Interpreter.Tests
         }
 
         [TestMethod]
-        [DataRow("while", "")]
-        public void TestKeywordExpression(string input, string expect)
+        [DataRow("while")]
+        public void TestKeywordExpression(string input)
         {
             var scanner = new Scanner(input);
             var tokens = scanner.ScanTokens();
@@ -159,10 +159,7 @@ namespace Interpreter.Tests
             var parser = new Parser(tokens);
             var expressions = parser.Parse();
 
-            var ast = new AstPrinter();
-            var result = ast.Print(expressions);
-
-            //Assert.AreEqual(expect, result);
+            Assert.AreEqual(0, expressions.Count);
         }
     }
 }
