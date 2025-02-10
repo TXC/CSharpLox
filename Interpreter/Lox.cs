@@ -24,7 +24,9 @@ internal static class Lox
         }
         
         //Interpreter.Interpret(expression);
-        Interpreter.Interpret(statements);
+        //Interpreter.Interpret(statements);
+        var result = Interpreter.Run(statements);
+        Console.WriteLine(result);
     }
 
     public static void RunFile(string path)
