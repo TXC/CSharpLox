@@ -330,6 +330,39 @@ public sealed class InterpreterTest
     #endregion Statements & State
 
     #region Control Flow
+    [TestMethod]
+    // This should print the string if the condition evaluates to True
+    [DataRow("if (true) print \"hello\";", "hello")]
+    // This should print "block body" if the condition evaluates to True
+    [DataRow("if (true) {\nprint \"block body\";\n}", "block body")]
+    // This program tests whether the assignment operation returns the value assigned.
+    // The if condition should evaluate to true and the inner boolean expression must be printed.
+    // So, in this case the if condition evaluates to true and prints the inner boolean expression
+    [DataRow("var a = false;\nif (a = true) {\n  print (a == false);\n}", "false")]
+    // // This program should print a different string based on the value of age
+    [DataRow("var stage = \"unknown\";\nvar age = 57;\nif (age < 18) { stage = \"child\"; }\nif (age >= 18) { stage = \"adult\"; }\nprint stage;\n\nvar isAdult = age >= 18;\nif (isAdult) { print \"eligible for voting: true\"; }\nif (!isAdult) { print \"eligible for voting: false\"; }\n", "adult\neligible for voting: true")]
+    public void TestControlFlowIfStatements(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        Assert.AreEqual(expect.Trim(), result);
+    }
+
+    /*
+
+
+
+    */
+
+    //[TestMethod]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //public void TestControlFlow(string input, string expect)
+    //{
+    //    var result = TestInputEvaluation(input);
+    //    Assert.AreEqual(expect.Trim(), result);
+    //}
+
     #endregion Control Flow
 
     #region Functions
