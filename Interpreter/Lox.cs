@@ -26,7 +26,7 @@ internal static class Lox
     {
         if (Lox.HadError)
         {
-            Console.Error.WriteLine("HadError = true");
+            Console.Error.WriteLine($"HadError = {HadError}, HadRuntimeError = {HadRuntimeError}");
             System.Environment.Exit(65);
         }
     }
@@ -35,7 +35,7 @@ internal static class Lox
     {
         if (Lox.HadRuntimeError)
         {
-            Console.Error.WriteLine("HadRuntimeError = true");
+            Console.Error.WriteLine($"HadError = {HadError}, HadRuntimeError = {HadRuntimeError}");
             System.Environment.Exit(70);
         }
     }
