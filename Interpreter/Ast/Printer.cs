@@ -110,10 +110,10 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
         builder.Append(' ');
         if (expression != null)
         {
-            builder.Append('(');
+            //builder.Append('(');
             var expr = expression.Accept(this);
             builder.Append(expr);
-            builder.Append(')');
+            //builder.Append(')');
         }
 
         foreach (var stmt in statements)
