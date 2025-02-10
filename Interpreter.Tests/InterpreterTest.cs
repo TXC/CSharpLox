@@ -280,7 +280,7 @@ public sealed class InterpreterTest
     }
 
     [TestMethod]
-    [DataRow("// This program declares a variable and prints its value\n// It then redeclares the variable and prints its value again\nvar baz = \"before\";\nprint baz;\nvar baz = \"after\";\nprint baz;\n", "before\nbefore")]
+    [DataRow("// This program declares a variable and prints its value\n// It then redeclares the variable and prints its value again\nvar baz = \"before\";\nprint baz;\nvar baz = \"after\";\nprint baz;\n", "before\nafter")]
     //[DataRow("", "")]
     //[DataRow("", "")]
     //[DataRow("", "")]

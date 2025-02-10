@@ -52,8 +52,10 @@ internal class Environment()
 
     public void Define(string name, object value)
     {
-        var res = _values.TryAdd(name, value);
-        //_values.Add(name, value);
+        if (!_values.TryAdd(name, value))
+        {
+            _values[name] = value;
+        }
     }
 }
 
