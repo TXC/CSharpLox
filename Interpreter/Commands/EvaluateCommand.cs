@@ -19,6 +19,9 @@ public class EvaluateCommand : BaseCommand, ICommand
         Lox.CheckAndHaltOnError();
 
         interpreter.Interpret(expression);
+
+        Lox.CheckAndHaltOnError();
+
         //Console.WriteLine(new AstPrinter().Print(expression));
     }
 }

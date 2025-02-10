@@ -34,13 +34,19 @@ public sealed class InterpreterTest
         var expression = parser.Parse();
         var interpreter = new CodeCrafters.Interpreter.Interpreter();
 
-        if (Lox.CheckError())
+        if (Lox.HadError)
         {
             throw new LoxException(64, "Has Error");
-            return "";
         }
 
-        return interpreter.Run(expression);
+        var res = interpreter.Run(expression);
+
+        if (Lox.HadRuntimeError)
+        {
+            throw new LoxException(70, "Has Error");
+        }
+
+        return res;
     }
 
     [TestMethod]
@@ -140,4 +146,15 @@ public sealed class InterpreterTest
     //    var result = TestInput(input);
     //    Assert.AreEqual(expect, result);
     //}
+
+    [TestMethod]
+    [DataRow("\"bar\" < true")]
+    //[DataRow("")]
+    //[DataRow("")]
+    //[DataRow("")]
+    [ExpectedException(typeof(LoxException))]
+    public void TestEvaluatingExpressions(string input)
+    {
+        TestInput(input);
+    }
 }
