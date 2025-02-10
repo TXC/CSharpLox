@@ -27,7 +27,9 @@ public sealed class InterpreterTest
 
     private static string TestInput(string input)
     {
-        var scanner = new Scanner($"print {input};");
+        input = Lox.AddPrintInput(input);
+
+        var scanner = new Scanner(input);
         var tokens = scanner.ScanTokens();
 
         var parser = new Parser(tokens);
@@ -136,7 +138,7 @@ public sealed class InterpreterTest
 
     [TestMethod]
     [DataRow("\"hello\" != \"quz\"", "true")]
-    //[DataRow("", "")]
+    [DataRow("\"baz\" != \"bar\"", "true")]
     //[DataRow("", "")]
     //[DataRow("", "")]
     public void TestEvaluatingExpressionsEqualityOperators(string input, string expect)

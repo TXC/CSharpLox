@@ -9,10 +9,7 @@ public class EvaluateCommand : BaseCommand, ICommand
     public void Execute(params string[] args)
     {
         var content = ParseFile(args);
-        if (content[..^1] != ";")
-        {
-            content += ";";
-        }
+        content = Lox.AddPrintInput(content);
         Lox.Run(content);
     }
 }

@@ -24,9 +24,9 @@ internal static class Lox
         }
         
         //Interpreter.Interpret(expression);
-        //Interpreter.Interpret(statements);
-        var result = Interpreter.Run(statements);
-        Console.WriteLine(result);
+        Interpreter.Interpret(statements);
+        //var result = Interpreter.Run(statements);
+        //Console.WriteLine(result);
     }
 
     public static void RunFile(string path)
@@ -63,6 +63,25 @@ internal static class Lox
         }
     }
 
+    public static bool CheckError()
+    {
+        Console.Error.WriteLine($"HadError = {HadError}, HadRuntimeError = {HadRuntimeError}");
+        return Lox.HadError || Lox.HadRuntimeError;
+    }
+
+    public static void CheckAndHaltOnError()
+    {
+        Console.Error.WriteLine($"HadError = {HadError}, HadRuntimeError = {HadRuntimeError}");
+        if (Lox.HadRuntimeError)
+        {
+            System.Environment.Exit(70);
+        }
+        if (Lox.HadError)
+        {
+            System.Environment.Exit(65);
+        }
+    }
+
     public static void Report(int line, string where, string message)
     {
         Console.Error.WriteLine("[line " + line + "] Error" + where + ": " + message);
@@ -71,35 +90,6 @@ internal static class Lox
 
     public static void Error(int line, string message)
         => Report(line, "", message);
-
-    public static bool CheckError()
-    {
-        return Lox.HadError || Lox.HadRuntimeError;
-    }
-
-    public static void HaltOnError()
-    {
-        if (Lox.HadError)
-        {
-            Console.Error.WriteLine($"HadError = {HadError}, HadRuntimeError = {HadRuntimeError}");
-            System.Environment.Exit(65);
-        }
-    }
-
-    public static void HaltOnRuntimeError()
-    {
-        if (Lox.HadRuntimeError)
-        {
-            Console.Error.WriteLine($"HadError = {HadError}, HadRuntimeError = {HadRuntimeError}");
-            System.Environment.Exit(70);
-        }
-    }
-
-    public static void CheckAndHaltOnError()
-    {
-        HaltOnRuntimeError();
-        HaltOnError();
-    }
 
     public static void Error(Token token, string message)
     {
@@ -118,5 +108,19 @@ internal static class Lox
         Console.Error.WriteLine(e.Message);
         Console.Error.WriteLine("[line " + e.Token.Line + "]");
         HadRuntimeError = true;
+    }
+
+    public static string AddPrintInput(string input)
+    {
+        if (input.Length < 5 || (input.Length >= 5 && input[..5] != "print"))
+        {
+            input = "print " + input;
+        }
+        if (input[..^1] != ";")
+        {
+            input += ";";
+        }
+
+        return input;
     }
 }
