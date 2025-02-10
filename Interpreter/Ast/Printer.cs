@@ -26,10 +26,8 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
 
     public void VisitBlockStmt(Stmt.Block stmt)
     {
-        foreach (var st in stmt.Statements)
-        {
-            st.Accept(this);
-        }
+        var res = Parenthesize("if", null, stmt.Statements.ToArray());
+        _sb.Append(res);
     }
 
     public void VisitExpressionStmt(Stmt.Expression stmt)
@@ -37,10 +35,18 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
         var res = stmt.Value.Accept(this);
         _sb.Append(res);
     }
-    
+
+    public void VisitIfStmt(Stmt.If stmt)
+    {
+        var res = Parenthesize("if", stmt.Condition, stmt.ThenBranch, stmt.ElseBranch);
+        _sb.Append(res);
+    }
 
     public string VisitGroupingExpr(Expr.Grouping expr)
         => Parenthesize("group", expr.Expression);
+
+    public string VisitLogicalExpr(Expr.Logical expr)
+        => Parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right);
 
     public string VisitLiteralExpr(Expr.Literal expr)
     {
@@ -55,7 +61,8 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
 
     public void VisitPrintStmt(Stmt.Print stmt)
     {
-        var res = stmt.Value.Accept(this);
+        var res = Parenthesize("print", stmt.Value);
+        //var res = stmt.Value.Accept(this);
         _sb.Append(res);
     }
 
@@ -67,7 +74,13 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
 
     public void VisitVarStmt(Stmt.Var stmt)
     {
-        var res = stmt.Initializer.Accept(this);
+        var res = Parenthesize(stmt.Name.Lexeme, stmt.Initializer);
+        _sb.Append(res);
+    }
+
+    public void VisitWhileStmt(Stmt.While stmt)
+    {
+        var res = Parenthesize("if", stmt.Condition, stmt.Body);
         _sb.Append(res);
     }
 
@@ -82,6 +95,32 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
             builder.Append(' ');
             var ex = expr.Accept(this);
             builder.Append(ex);
+        }
+        builder.Append(')');
+
+        return builder.ToString();
+    }
+
+    private string Parenthesize(string name, Expr? expression = null, params Stmt?[] statements)
+    {
+        var builder = new StringBuilder();
+
+        builder.Append('(');
+        builder.Append(name);
+        builder.Append(' ');
+        if (expression != null)
+        {
+            builder.Append('(');
+            var expr = expression.Accept(this);
+            builder.Append(expr);
+            builder.Append(')');
+        }
+
+        foreach (var stmt in statements)
+        {
+            builder.Append('{');
+            stmt?.Accept(this);
+            builder.Append('}');
         }
         builder.Append(')');
 

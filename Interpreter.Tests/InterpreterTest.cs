@@ -66,6 +66,7 @@ public sealed class InterpreterTest
         return res.Trim();
     }
 
+    #region Evaluating Expressions
     [TestMethod]
     [DataRow("true", "true")]
     [DataRow("false", "false")]
@@ -199,7 +200,9 @@ public sealed class InterpreterTest
         Assert.IsFalse(Lox.HadError);
         Assert.AreEqual("", result);
     }
+    #endregion Evaluating Expressions
 
+    #region Statements & State
     [TestMethod]
     [DataRow("// This program prints a boolean\nprint false;", "false")]
     [DataRow("// This program prints the result of the concatenation of three strings\nprint \"quz\" + \"bar\" + \"foo\";", "quzbarfoo")]
@@ -281,48 +284,54 @@ public sealed class InterpreterTest
 
     [TestMethod]
     [DataRow("// This program declares a variable and prints its value\n// It then redeclares the variable and prints its value again\nvar baz = \"before\";\nprint baz;\nvar baz = \"after\";\nprint baz;\n", "before\nafter")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
+    [DataRow("// This program declares a variable and prints its value\n// It also uses a previously declared variable's value to initialize a new variable\nvar world = \"after\";\nvar world = \"before\";\nvar world = world;\nprint world;\n", "before")]
+    [DataRow("// This program declares and initializes multiple variables and prints their values\nvar hello = 2;\nprint hello;\nvar hello = 3;\nprint hello;\nvar world = 5;\nprint world;\nvar hello = world;\nprint hello;", "2\n3\n5\n5")]
+    [DataRow("// This program declares a variable and initializes it with the value of another variable\n// But as the variable is not declared before it is used it leads to a runtime error\nvar bar = baz;", "")]
     public void TestStatementsAndStateVariablesRedeclareVariables(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        //Assert.IsTrue(Lox.HadRuntimeError);
+        //Assert.IsFalse(Lox.HadError);
+        Assert.AreEqual(expect, result);
+    }
+
+    [TestMethod]
+    [DataRow("// This program tests that the assignment operator returns the value that was assigned\n// And prints the value of the variable after each assignment\nvar world;\nworld = 1;\nprint world;\nprint world = 2;\nprint world;", "1\n2\n2")]
+    [DataRow("// This program tests that the assignment operator works on any declared variable\nvar baz = 32;\nvar bar = 32;\nbar = baz;\nbaz = bar;\nprint baz + bar;", "64")]
+    [DataRow("// This program tests that the assignment operator returns the value that was assigned\n// So, it can be used multiple times in a single statement\nvar bar;\nvar baz;\n    \nbar = baz = 47 + 28 * 17;\nprint bar;\nprint baz;", "523\n523")]
+    [DataRow("// This program tests that the assignment operator returns the value that was assigned\n// So, it can be used multiple times in a single statement\nvar bar = 47;\nvar quz;\nvar hello;\n    \nbar = quz = hello = bar * 2;\nprint bar;\nprint quz;\nprint quz;\n", "94\n94\n94")]
+    public void TestStatementsAndStateAssignmentOperation(string input, string expect)
     {
         var result = TestInputStatement(input);
         Assert.AreEqual(expect, result);
     }
 
+    [TestMethod]
+    [DataRow("// This program tests that curly braces can be used to group multiple statements into blocks\n{\n    var foo = \"quz\";\n    print foo;\n}", "quz")]
+    [DataRow("// This program tests that blocks can be used to group statements and variables\n// creating local scopes\n{\n    var bar = \"before\";\n    print bar;\n}\n{\n    var bar = \"after\";\n    print bar;\n}", "before\nafter")]
+    [DataRow("// This program tests that scopes can be nested\n{\n    var hello = 14;\n    {\n        var bar = 14;\n        print bar;\n    }\n    print hello;\n}", "14\n14")]
+    [DataRow("// This program tests that scopes are properly closed\n// Here the inner scope is missing a closing curly brace\n// Which leads to a compilation error\n{\n    var hello = 17;\n    var foo = 17;\n    {\n        print hello + foo;\n}", "")]
+    public void TestStatementsAndStateBlockSyntax(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        Assert.AreEqual(expect, result);
+    }
 
+    [TestMethod]
+    [DataRow("// This program tests that nested scopes can be created\n// and that local variables can be accessed\nvar hello = (61 * 25) - 26;\n{\n    var quz = \"world\" + \"83\";\n    print quz;\n}\nprint hello;", "world83\n1499")]
+    [DataRow("// This program tests variable shadowing across nested scopes\n{\n    var baz = \"before\";\n    {\n        var baz = \"after\";\n        print baz;\n    }\n    print baz;\n}", "after\nbefore")]
+    [DataRow("// This program creates nested scopes and tests local scopes and variable shadowing\nvar baz = \"global baz\";\nvar world = \"global world\";\nvar hello = \"global hello\";\n{\n  var baz = \"outer baz\";\n  var world = \"outer world\";\n  {\n    var baz = \"inner baz\";\n    print baz;\n    print world;\n    print hello;\n  }\n  print baz;\n  print world;\n  print hello;\n}\nprint baz;\nprint world;\nprint hello;\n\n", "inner baz\nouter world\nglobal hello\nouter baz\nouter world\nglobal hello\nglobal baz\nglobal world\nglobal hello")]
+    [DataRow("// This program tests that when a variable is declared in an outer scope,\n// it can be used in an inner scope\n// But when a variable is declared in an inner scope,\n// it can't be used in an outer scope\n{\n  var foo = \"outer foo\";\n  var hello = \"outer hello\";\n  {\n    foo = \"modified foo\";\n    var hello = \"inner hello\";\n    print foo;\n    print hello;\n  }\n  print foo;\n  print hello;\n}\nprint hello;", "modified foo\ninner hello\nmodified foo\nouter hello")]
+    public void TestStatementsAndStateScopes(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        Assert.AreEqual(expect, result);
+    }
+    #endregion Statements & State
 
+    #region Control Flow
+    #endregion Control Flow
 
-    //[TestMethod]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //public void TestStatementsAndState(string input, string expect)
-    //{
-    //    var result = TestInputStatement(input);
-    //    Assert.AreEqual(expect, result);
-    //}
-
-    //[TestMethod]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //public void TestStatementsAndState(string input, string expect)
-    //{
-    //    var result = TestInputStatement(input);
-    //    Assert.AreEqual(expect, result);
-    //}
-
-    //[TestMethod]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //[DataRow("", "")]
-    //public void TestStatementsAndState(string input, string expect)
-    //{
-    //    var result = TestInputStatement(input);
-    //    Assert.AreEqual(expect, result);
-    //}
+    #region Functions
+    #endregion Functions
 }

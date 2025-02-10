@@ -36,6 +36,7 @@ public class GenerateAstCommand : BaseCommand, ICommand
             "Binary   : Expr Left, Token Operator, Expr Right",
             "Grouping : Expr Expression",
             "Literal  : object? Value",
+            "Logical  : Expr Left, Token Operator, Expr Right",
             "Unary    : Token Operator, Expr Right",
             "Variable : Token Name",
         ]);
@@ -43,8 +44,11 @@ public class GenerateAstCommand : BaseCommand, ICommand
         Generator.Define(outputDir, "Stmt", "void", [
             "Block      : List<Stmt> Statements",
             "Expression : Expr Value",
+            "If         : Expr Condition, Stmt ThenBranch," +
+                        " Stmt? ElseBranch",
             "Print      : Expr Value",
-            "Var        : Token Name, Expr Initializer",
+            "Var        : Token Name, Expr? Initializer",
+            "While      : Expr Condition, Stmt Body"
         ]);
     }
 

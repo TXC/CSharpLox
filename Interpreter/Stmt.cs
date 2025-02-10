@@ -10,8 +10,10 @@ internal abstract class Stmt {
   public interface IVisitor {
     void VisitBlockStmt(Block stmt);
     void VisitExpressionStmt(Expression stmt);
+    void VisitIfStmt(If stmt);
     void VisitPrintStmt(Print stmt);
     void VisitVarStmt(Var stmt);
+    void VisitWhileStmt(While stmt);
   }
   public class Block(List<Stmt> statements) : Stmt
   {
@@ -25,17 +27,32 @@ internal abstract class Stmt {
     public override void Accept(IVisitor visitor) => visitor.VisitExpressionStmt(this);
   }
 
+  public class If(Expr condition, Stmt thenbranch, Stmt? elsebranch) : Stmt
+  {
+    public Expr Condition { get; set; } = condition;
+    public Stmt ThenBranch { get; set; } = thenbranch;
+    public Stmt? ElseBranch { get; set; } = elsebranch;
+    public override void Accept(IVisitor visitor) => visitor.VisitIfStmt(this);
+  }
+
   public class Print(Expr value) : Stmt
   {
     public Expr Value { get; set; } = value;
     public override void Accept(IVisitor visitor) => visitor.VisitPrintStmt(this);
   }
 
-  public class Var(Token name, Expr initializer) : Stmt
+  public class Var(Token name, Expr? initializer) : Stmt
   {
     public Token Name { get; set; } = name;
-    public Expr Initializer { get; set; } = initializer;
+    public Expr? Initializer { get; set; } = initializer;
     public override void Accept(IVisitor visitor) => visitor.VisitVarStmt(this);
+  }
+
+  public class While(Expr condition, Stmt body) : Stmt
+  {
+    public Expr Condition { get; set; } = condition;
+    public Stmt Body { get; set; } = body;
+    public override void Accept(IVisitor visitor) => visitor.VisitWhileStmt(this);
   }
 
   public abstract void Accept(IVisitor visitor);
