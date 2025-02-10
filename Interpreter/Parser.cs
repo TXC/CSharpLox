@@ -54,6 +54,11 @@ internal class Parser(List<Token> tokens)
 
     private Stmt Statement()
     {
+        if (Match(TokenType.FOR))
+        {
+            return ForStatement();
+        }
+
         if (Match(TokenType.IF))
         {
             return IfStatement();
