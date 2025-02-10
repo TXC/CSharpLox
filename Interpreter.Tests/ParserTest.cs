@@ -38,20 +38,25 @@ namespace Interpreter.Tests
             var parser = new Parser(tokens);
             var expressions = parser.Parse();
 
+            if (expressions is null)
+            {
+                return "";
+            }
+
             var ast = new AstPrinter();
             return ast.Print(expressions);
         }
 
         [TestMethod]
-        [DataRow("\"bar", "")]
-        //[DataRow("", "")]
-        //[DataRow("", "")]
-        //[DataRow("", "")]
-        [ExpectedException(typeof(NullReferenceException))]
+        [DataRow("\"baz", "")]
+        [DataRow("(foo", "")]
+        [DataRow("(88 +)", "")]
+        [DataRow("+", "")]
         public void TestParsingExpressionsSyntacticErrors(string input, string expect)
         {
             var result = TestInput(input);
-            Assert.AreEqual(expect, result);
+            //Assert.AreEqual(expect, result);
+            Assert.IsTrue(Lox.HadError);
         }
 
         [TestMethod]

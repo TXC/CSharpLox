@@ -22,7 +22,12 @@ internal static class Lox
     public static void Error(int line, string message)
         => Report(line, "", message);
 
-    public static void CheckError()
+    public static bool CheckError()
+    {
+        return Lox.HadError || Lox.HadRuntimeError;
+    }
+
+    public static void CheckAndHaltOnError()
     {
         if (Lox.HadError)
         {

@@ -5,17 +5,24 @@ namespace CodeCrafters.Interpreter;
 
 public class Interpreter : Expr.IVisitor<object?>
 {
-    public void Interpret(Expr expression)
+    public string Run(Expr expression)
     {
         try
         {
-            object value = Evaluate(expression);
-            Console.WriteLine(Stringify(value));
+            var value = Evaluate(expression);
+            return Stringify(value);
         }
         catch (RuntimeException error)
         {
             Lox.RuntimeError(error);
         }
+
+        return "";
+    }
+
+    public void Interpret(Expr expression)
+    {
+        Console.WriteLine(Run(expression));
     }
 
     public object? VisitBinaryExpr(Expr.Binary expr)
@@ -87,7 +94,8 @@ public class Interpreter : Expr.IVisitor<object?>
         return null;
     }
 
-    private object Evaluate(Expr expr) => expr.Accept(this);
+    private object Evaluate(Expr expr)
+        => expr.Accept(this);
 
     private bool IsTruthy(object? obj)
     {
@@ -141,6 +149,11 @@ public class Interpreter : Expr.IVisitor<object?>
         if (obj is null)
         {
             return "nil";
+        }
+
+        if (obj is bool)
+        {
+            return $"{obj}".ToLower();
         }
 
         if (obj is double a) {

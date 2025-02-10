@@ -1,4 +1,5 @@
-﻿using CodeCrafters.Interpreter;
+﻿using System.Linq.Expressions;
+using CodeCrafters.Interpreter;
 
 namespace Interpreter.Tests;
 
@@ -21,4 +22,39 @@ public sealed class InterpreterTest
         //    Assert.AreEqual(matches[i], tokens[i].ToString());
         //}
     }
+
+    private string TestInput(string input)
+    {
+        var scanner = new Scanner(input);
+        var tokens = scanner.ScanTokens();
+
+        var parser = new Parser(tokens);
+        var expression = parser.Parse();
+
+        if (expression is null)
+        {
+            return "";
+        }
+
+        var interpreter = new CodeCrafters.Interpreter.Interpreter();
+
+        if (Lox.CheckError())
+        {
+            return "";
+        }
+
+        return interpreter.Run(expression);
+    }
+
+    [TestMethod]
+    [DataRow("true", "true")]
+    [DataRow("false", "false")]
+    [DataRow("nil", "nil")]
+    [DataRow("", "")]
+    public void TestEvaluatingExpressionsLiteralsBooleansAndNil(string input, string expect)
+    {
+        var result = TestInput(input);
+        Assert.AreEqual(expect, result);
+    }
+
 }
