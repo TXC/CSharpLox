@@ -90,7 +90,7 @@ internal class Parser(List<Token> tokens)
 
     private Stmt ExpressionStatement()
     {
-        Expr value = Expression();
+        var value = Expression();
         Consume(TokenType.SEMICOLON, "Expect ';' after value.");
         return new Stmt.Expression(value);
     }

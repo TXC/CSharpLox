@@ -16,11 +16,17 @@ public class EvaluateCommand : BaseCommand, ICommand
         var expression = parser.Parse();
         var interpreter = new Interpreter();
 
-        Lox.CheckAndHaltOnError();
+        if (Lox.CheckError())
+        {
+            System.Environment.Exit(70);
+        }
 
         interpreter.Interpret(expression);
 
-        Lox.CheckAndHaltOnError();
+        if (Lox.CheckError())
+        {
+            System.Environment.Exit(70);
+        }
 
         //Console.WriteLine(new AstPrinter().Print(expression));
     }
