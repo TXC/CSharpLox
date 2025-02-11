@@ -443,12 +443,86 @@ public sealed class InterpreterTest
 
     [TestMethod]
     [DataRow("print clock() + 69;")]
-    public void TestFunctionsNativeFunctions(string input)
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    public void TestFunctionsNativeFunctionsPart1(string input)
     {
         var time = (double)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
         var expect = (time + 69).ToString(CultureInfo.InvariantCulture);
         var result = TestInputStatement(input);
         Assert.AreEqual(expect.Trim(), result);
     }
+
+    [TestMethod]
+    //[DataRow("", "")]
+    [DataRow("var startTime = clock();\nvar lastCheck = startTime;\nvar running = true;\nprint \"Starting timer for 0.2 seconds\";\nvar startTime = clock();\nwhile (running) {\n  if (clock() > startTime + 0.2) {\n    print \"Timer ended\";\n    running = false;\n  }\n}", "Starting timer for 0.2 seconds\nTimer ended")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    public void TestFunctionsNativeFunctionsPart2(string input, string expect) => TestFunctions(input, expect);
+
+    [TestMethod]
+    [DataRow("fun foo() {}\nprint foo;", "<fn foo>")]
+    [DataRow("fun f() {}\nf();", "")]
+    [DataRow("fun baz() { print 34; }\nbaz();", "34")]
+    //[DataRow("", "")]
+    public void TestFunctionsFunctionsWithoutArguments(string input, string expect) => TestFunctions(input, expect);
+
+    [TestMethod]
+    [DataRow(
+        "fun f8(a, b, c, d, e, f, g, h) { print a - b + c * d + e - f + g - h; }\nf8(59, 59, 59, 59, 59, 59, 59, 59);",
+        "3481")]
+    [DataRow("fun f3(a, b, c) { print a + b + c; }\nf3(27, 27, 27);", "81")]
+    [DataRow("fun f1(a) { print a; }\nf1(19);", "19")]
+    //[DataRow("", "")]
+    public void TestFunctionsFunctionsWithArguments(string input, string expect) => TestFunctions(input, expect);
+
+
+    [TestMethod]
+    [DataRow("fun foo(a, b c, d, e, f) {}\nfoo();", "")]
+    [DataRow("fun f() 55;\nprint f();", "")]
+    [DataRow("print clock)));", "")]
+    [DataRow("print clock(;", "")]
+    public void TestFunctionsSyntaxErrors(string input, string expect) => TestFunctions(input, expect);
+
+    [TestMethod]
+    [DataRow("fun f() {\nreturn;\nprint \"bad\";\n}\nprint f();", "nil")]
+    [DataRow("fun f() {\n  while (!true) return \"ok\";\n}\n\nprint f();", "nil")]
+    [DataRow("fun f() {\n  if (true) return \"no\"; else return \"ok\";\n}\n\nprint f();", "no")]
+    [DataRow("fun fib(n) {\n  if (n < 2) return n;\n  return fib(n - 2) + fib(n - 1);\n}\n\nvar start = clock();\nprint fib(10) == 55;\nprint (clock() - start) < 5; // 5 seconds", "true\ntrue")]
+    public void TestFunctionsReturnStatements(string input, string expect) => TestFunctions(input, expect);
+
+    [TestMethod]
+    [DataRow("var globalGreeting = \"Hello\";\n\nfun makeGreeter() {\n  fun greet(name) {\n    print globalGreeting + \" \" + name;\n  }\n  return greet;\n}\n\nvar sayHello = makeGreeter();\n\nsayHello(\"Bob\");\nsayHello(\"Alice\");\nsayHello(\"Eve\");", "Hello Bob\nHello Alice\nHello Eve")]
+    [DataRow("fun returnArg(arg) {\n  return arg;\n}\n\nfun returnFunCallWithArg(func, arg) {\n  return returnArg(func)(arg);\n}\n\nfun printArg(arg) {\n  print arg;\n}\n\nreturnFunCallWithArg(printArg, \"world\");", "world")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    public void TestFunctionsHigherOrderFunctions(string input, string expect) => TestFunctions(input, expect);
+
+    [TestMethod]
+    [DataRow("(true == true)();", "")]
+    [DataRow("fun f(a, b) {}\nf(1);", "")]
+    [DataRow("fun f(a, b) {\n  print a;\n  print b;\n}\n\nf(1, 2, 3, 4);", "")]
+    [DataRow("51();", "")]
+    public void TestFunctionsRuntimeErrors(string input, string expect)
+    {
+        TestFunctions(input, expect);
+        Assert.IsTrue(Lox.HadRuntimeError);
+        Assert.IsFalse(Lox.HadError);
+    }
+
+    [TestMethod]
+    [DataRow("var counter = 68;\n\nfun incrementCounter(amount) {\n  counter = counter + amount;\n  print counter;\n}\n\n{\n  counter = 14;\n  incrementCounter(4);\n  print counter;\n}\nprint counter;\n", "18\n18\n18")]
+    [DataRow("var a = 91;\n\nfun printAndModify() {\n  print a;\n  var a = 69;\n  print a;\n}\n\nprint a;\nvar a = 93;\nprintAndModify();", "91\n93\n69")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    public void TestFunctionsFunctionScope(string input, string expect) => TestFunctions(input, expect);
+
+    [TestMethod]
+    [DataRow("{\n  var threshold = 50;\n\n  fun isEven(n) {\n    if (n == 0) return true;\n    if (n > threshold) return false;\n    return isOdd(n - 1);\n  }\n\n  fun isOdd(n) {\n    if (n == 0) return false;\n    if (n > threshold) return false;\n    return isEven(n - 1);\n  }\n\n  print isEven(94);\n}", "false")]
+    [DataRow("fun makeCounter() {\n  var i = 0;\n  fun count() {\n    i = i + 6;\n    print i;\n  }\n\n  return count;\n}\n\nvar counter = makeCounter();\ncounter();\ncounter();\n", "6\n12")]
+    //[DataRow("", "")]
+    //[DataRow("", "")]
+    public void TestFunctionsClosures(string input, string expect) => TestFunctions(input, expect);
     #endregion Functions
 }
