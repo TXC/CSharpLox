@@ -4,11 +4,11 @@ using CodeCrafters.Interpreter.Exceptions;
 
 namespace CodeCrafters.Interpreter;
 
-internal static class Lox
+internal static partial class Lox
 {
     public static bool HadError = false;
     public static bool HadRuntimeError = false;
-    private static readonly Interpreter Interpreter = new Interpreter();
+    private static readonly Interpreter Interpreter = new();
 
     public static void Run(string source)
     {
@@ -110,13 +110,13 @@ internal static class Lox
     public static void RuntimeError(RuntimeException e)
     {
         Console.Error.WriteLine(e.Message);
-        Console.Error.WriteLine("[line " + e.Token.Line + "]");
+        Console.Error.WriteLine("[line " + e.Token?.Line + "]");
         HadRuntimeError = true;
     }
 
     public static string AddPrintInput(string input)
     {
-        var lines = Regex.Split(input, @"[\n|\n\r|\r]");
+        var lines = NewLineRegex().Split(input);
         //var lines = input.Split("\n");
         for (var i = 0; i < lines.Length; i++)
         {
@@ -142,4 +142,7 @@ internal static class Lox
 
         return input;
     }
+
+    [GeneratedRegex(@"[\n|\n\r|\r]", RegexOptions.Compiled)]
+    private static partial Regex NewLineRegex();
 }

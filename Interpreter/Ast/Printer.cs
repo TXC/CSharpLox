@@ -6,7 +6,7 @@ namespace CodeCrafters.Interpreter.Ast;
 
 internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
 {
-    private readonly StringBuilder _sb = new StringBuilder();
+    private readonly StringBuilder _sb = new();
     public string Print(List<Stmt> statements)
     {
         foreach (var stmt in statements)
@@ -24,15 +24,24 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
     public string VisitBinaryExpr(Expr.Binary expr)
         => Parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right);
 
+    public string VisitCallExpr(Expr.Call expr)
+        => Parenthesize(expr.Paren.Lexeme, [..expr.Arguments]);
+
     public void VisitBlockStmt(Stmt.Block stmt)
     {
-        var res = Parenthesize("if", null, stmt.Statements.ToArray());
+        var res = Parenthesize("if", null, [..stmt.Statements]);
         _sb.Append(res);
     }
 
     public void VisitExpressionStmt(Stmt.Expression stmt)
     {
         var res = stmt.Value.Accept(this);
+        _sb.Append(res);
+    }
+
+    public void VisitFunctionStmt(Stmt.Function stmt)
+    {
+        var res = Parenthesize("<fn " + stmt.Name.Lexeme + ">", null, [.. stmt.Body]);
         _sb.Append(res);
     }
 
@@ -66,6 +75,11 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
         _sb.Append(res);
     }
 
+    public void VisitReturnStmt(Stmt.Return stmt)
+    {
+        throw new NotImplementedException();
+    }
+
     public string VisitUnaryExpr(Expr.Unary expr)
         => Parenthesize(expr.Operator.Lexeme, expr.Right);
 
@@ -84,7 +98,7 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
         _sb.Append(res);
     }
 
-    private string Parenthesize(string name, params Expr[] expressions)
+    private string Parenthesize(string name, params Expr?[] expressions)
     {
         var builder = new StringBuilder();
 
@@ -93,7 +107,7 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
         foreach (var expr in expressions)
         {
             builder.Append(' ');
-            var ex = expr.Accept(this);
+            var ex = expr?.Accept(this);
             builder.Append(ex);
         }
         builder.Append(')');
@@ -108,7 +122,7 @@ internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
         builder.Append('(');
         builder.Append(name);
         builder.Append(' ');
-        if (expression != null)
+        if (expression is not null)
         {
             //builder.Append('(');
             var expr = expression.Accept(this);

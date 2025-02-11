@@ -7,17 +7,29 @@ using CodeCrafters.Interpreter.Exceptions;
 
 namespace CodeCrafters.Interpreter;
 
-internal class Environment()
+internal class Environment
 {
-    private Dictionary<string, object> _values = new Dictionary<string, object>();
-    private Environment? _enclosing = null;
+    private readonly Dictionary<string, object?> _values = [];
+    //private readonly Environment _globals = new();
+    private readonly Environment? _enclosing = null;
 
+    public Environment()
+    {
+        //_globals.Define("clock", new ILoxCallable() {
+        //    public int Arity() { return 0; }
+        //    public object Call(Interpreter interpreter, List<object> arguments)
+        //    {
+        //        return (double)System.currentTimeMillis() / 1000.0;
+        //    }
+        //    public override string ToString() { return "<native fn>"; }
+        //});
+    }
     public Environment(Environment enclosing) : this()
     {
         _enclosing = enclosing;
     }
 
-    public object Get(Token name)
+    public object? Get(Token name)
     {
         if (_values.TryGetValue(name.Lexeme, out var result))
         {
@@ -32,7 +44,7 @@ internal class Environment()
         throw new RuntimeException(name, "Undefined variable '" + name.Lexeme + "'.");
     }
 
-    public void Assign(Token name, object value)
+    public void Assign(Token name, object? value)
     {
         if (_values.ContainsKey(name.Lexeme))
         {
@@ -50,7 +62,7 @@ internal class Environment()
         throw new RuntimeException(name, "Undefined variable '" + name.Lexeme + "'.");
     }
 
-    public void Define(string name, object value)
+    public void Define(string name, object? value)
     {
         if (!_values.TryAdd(name, value))
         {

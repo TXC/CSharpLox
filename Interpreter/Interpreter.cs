@@ -1,14 +1,16 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text;
 using CodeCrafters.Interpreter.Exceptions;
+using static CodeCrafters.Interpreter.Stmt;
 // ReSharper disable IdentifierTypo
 
 namespace CodeCrafters.Interpreter;
 
 internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
 {
-    private readonly StringBuilder _sb = new StringBuilder();
-    private Environment _environment = new Environment();
+    private readonly StringBuilder _sb = new();
+    private Environment _environment = new();
 
     public string Run(List<Stmt> statements)
     {
@@ -52,6 +54,11 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
         var left = Evaluate(expr.Left);
         var right = Evaluate(expr.Right);
 
+        if (left is null || right is null)
+        {
+            throw new RuntimeException(expr.Operator, "Operands must not be nil.");
+        }
+
         switch (expr.Operator.Type) {
             case TokenType.GREATER:
                 CheckNumberOperands(expr.Operator, left, right);
@@ -69,14 +76,12 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
                 CheckNumberOperands(expr.Operator, left, right);
                 return (double)left - (double)right;
             case TokenType.PLUS:
-                if (left is double a && right is double b) {
-                    return a + b;
-                }
-
-                if (left is string c && right is string d) {
-                    return c + d;
-                }
-                throw new RuntimeException(expr.Operator, "Operands must be two numbers or two strings.");
+                return left switch
+                {
+                    double a when right is double b => a + b,
+                    string c when right is string d => c + d,
+                    _ => throw new RuntimeException(expr.Operator, "Operands must be two numbers or two strings.")
+                };
 
             case TokenType.SLASH:
                 CheckNumberOperands(expr.Operator, left, right);
@@ -92,6 +97,26 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
 
         // Unreachable.
         return null;
+    }
+
+    public object? VisitCallExpr(Expr.Call expr)
+    {
+        var callee = Evaluate(expr.Callee);
+
+        var arguments = new List<object?>();
+        foreach (var argument in expr.Arguments)
+        {
+            arguments.Add(Evaluate(argument));
+        }
+
+        if (callee is not ILoxCallable function) {
+            throw new RuntimeException(expr.Paren, "Can only call functions and classes.");
+        }
+        if (arguments.Count != function.Arity())
+        {
+            throw new RuntimeException(expr.Paren, "Expected " + function.Arity() + " arguments but got " + arguments.Count + ".");
+        }
+        return function.Call(this, arguments);
     }
 
     public object? VisitGroupingExpr(Expr.Grouping expr)
@@ -129,6 +154,10 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
             case TokenType.BANG:
                 return !IsTruthy(right);
             case TokenType.MINUS:
+                if (right is null)
+                {
+                    return null;
+                }
                 CheckNumberOperand(expr.Operator, right);
                 return -(double)right;
         }
@@ -140,8 +169,8 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
     public object? VisitVariableExpr(Expr.Variable expr)
         => _environment.Get(expr.Name);
 
-    private object? Evaluate(Expr expr)
-        => expr.Accept(this);
+    private object? Evaluate(Expr? expr)
+        => expr?.Accept(this);
 
     private void Execute(Stmt stmt)
         => stmt.Accept(this);
@@ -170,6 +199,12 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
     public void VisitExpressionStmt(Stmt.Expression stmt)
         => Evaluate(stmt.Value);
 
+    public void VisitFunctionStmt(Stmt.Function stmt)
+    {
+        var function = new LoxFunction(stmt, _environment);
+        _environment.Define(stmt.Name.Lexeme, function);
+    }
+
     public void VisitIfStmt(Stmt.If stmt)
     {
         if (IsTruthy(Evaluate(stmt.Condition)))
@@ -188,9 +223,17 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
         _sb.Append(Stringify(value) + "\n");
     }
 
+    public void VisitReturnStmt(Stmt.Return stmt)
+    {
+        object? value = null;
+        if (stmt.Value != null) value = Evaluate(stmt.Value);
+
+        throw new Return(value);
+    }
+
     public void VisitVarStmt(Stmt.Var stmt)
     {
-        object value = null;
+        object? value = null;
         if (stmt.Initializer is not null)
         {
             value = Evaluate(stmt.Initializer);
@@ -207,7 +250,7 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
         }
     }
 
-    public object VisitAssignExpr(Expr.Assign expr)
+    public object? VisitAssignExpr(Expr.Assign expr)
     {
         var value = Evaluate(expr.Value);
         _environment.Assign(expr.Name, value);

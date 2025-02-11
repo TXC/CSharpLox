@@ -10,6 +10,7 @@ internal abstract class Expr {
   public interface IVisitor<out T> {
     T VisitAssignExpr(Assign expr);
     T VisitBinaryExpr(Binary expr);
+    T VisitCallExpr(Call expr);
     T VisitGroupingExpr(Grouping expr);
     T VisitLiteralExpr(Literal expr);
     T VisitLogicalExpr(Logical expr);
@@ -29,6 +30,14 @@ internal abstract class Expr {
     public Token Operator { get; set; } = @operator;
     public Expr Right { get; set; } = right;
     public override T Accept<T>(IVisitor<T> visitor) => visitor.VisitBinaryExpr(this);
+  }
+
+  public class Call(Expr callee, Token paren, List<Expr?> arguments) : Expr
+  {
+    public Expr Callee { get; set; } = callee;
+    public Token Paren { get; set; } = paren;
+    public List<Expr?> Arguments { get; set; } = arguments;
+    public override T Accept<T>(IVisitor<T> visitor) => visitor.VisitCallExpr(this);
   }
 
   public class Grouping(Expr expression) : Expr
