@@ -1,4 +1,5 @@
-﻿using CodeCrafters.Interpreter;
+﻿using System.Globalization;
+using CodeCrafters.Interpreter;
 
 namespace Interpreter.Tests;
 
@@ -444,7 +445,8 @@ public sealed class InterpreterTest
     [DataRow("print clock() + 69;")]
     public void TestFunctionsNativeFunctions(string input)
     {
-        var expect = (DateTime.Now.Second + 69).ToString();
+        var time = (double)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+        var expect = (time + 69).ToString(CultureInfo.InvariantCulture);
         var result = TestInputStatement(input);
         Assert.AreEqual(expect.Trim(), result);
     }

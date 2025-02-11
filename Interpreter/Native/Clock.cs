@@ -13,7 +13,7 @@ namespace CodeCrafters.Interpreter.Native
 
         public object Call(Interpreter interpreter, IEnumerable<object?> arguments)
         {
-            return (double)DateTime.Now.Second;
+            return (double) ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
         }
 
         public override string ToString() => "<native fn>";
