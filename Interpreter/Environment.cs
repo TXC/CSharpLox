@@ -7,23 +7,11 @@ using CodeCrafters.Interpreter.Exceptions;
 
 namespace CodeCrafters.Interpreter;
 
-internal class Environment
+internal class Environment()
 {
     private readonly Dictionary<string, object?> _values = [];
-    //private readonly Environment _globals = new();
     private readonly Environment? _enclosing = null;
 
-    public Environment()
-    {
-        //_globals.Define("clock", new ILoxCallable() {
-        //    public int Arity() { return 0; }
-        //    public object Call(Interpreter interpreter, List<object> arguments)
-        //    {
-        //        return (double)System.currentTimeMillis() / 1000.0;
-        //    }
-        //    public override string ToString() { return "<native fn>"; }
-        //});
-    }
     public Environment(Environment enclosing) : this()
     {
         _enclosing = enclosing;

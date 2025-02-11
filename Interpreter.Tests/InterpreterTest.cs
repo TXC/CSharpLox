@@ -333,7 +333,6 @@ public sealed class InterpreterTest
     #endregion Statements & State
 
     #region Control Flow
-
     private static void TestControlFlow(string input, string expect)
     {
         var result = TestInputStatement(input);
@@ -434,5 +433,20 @@ public sealed class InterpreterTest
     #endregion Control Flow
 
     #region Functions
+
+    private static void TestFunctions(string input, string expect)
+    {
+        var result = TestInputStatement(input);
+        Assert.AreEqual(expect.Trim(), result);
+    }
+
+    [TestMethod]
+    [DataRow("print clock() + 69;")]
+    public void TestFunctionsNativeFunctions(string input)
+    {
+        var expect = (DateTime.Now.Second + 69).ToString();
+        var result = TestInputStatement(input);
+        Assert.AreEqual(expect.Trim(), result);
+    }
     #endregion Functions
 }

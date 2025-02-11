@@ -2,7 +2,8 @@
 using System.Globalization;
 using System.Text;
 using CodeCrafters.Interpreter.Exceptions;
-using static CodeCrafters.Interpreter.Stmt;
+using CodeCrafters.Interpreter.Interfaces;
+using CodeCrafters.Interpreter.Native;
 // ReSharper disable IdentifierTypo
 
 namespace CodeCrafters.Interpreter;
@@ -10,7 +11,14 @@ namespace CodeCrafters.Interpreter;
 internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
 {
     private readonly StringBuilder _sb = new();
-    private Environment _environment = new();
+    private Environment _environment;
+    private readonly Environment _globals = new();
+
+    public Interpreter()
+    {
+        _environment = _globals;
+        _globals.Define("clock", Clock.Impl);
+    }
 
     public string Run(List<Stmt> statements)
     {
@@ -112,9 +120,9 @@ internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor
         if (callee is not ILoxCallable function) {
             throw new RuntimeException(expr.Paren, "Can only call functions and classes.");
         }
-        if (arguments.Count != function.Arity())
+        if (arguments.Count != function.Arity)
         {
-            throw new RuntimeException(expr.Paren, "Expected " + function.Arity() + " arguments but got " + arguments.Count + ".");
+            throw new RuntimeException(expr.Paren, "Expected " + function.Arity + " arguments but got " + arguments.Count + ".");
         }
         return function.Call(this, arguments);
     }

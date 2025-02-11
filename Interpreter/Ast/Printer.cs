@@ -7,7 +7,7 @@ namespace CodeCrafters.Interpreter.Ast;
 internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor
 {
     private readonly StringBuilder _sb = new();
-    public string Print(List<Stmt> statements)
+    public string Print(IEnumerable<Stmt> statements)
     {
         foreach (var stmt in statements)
         {
